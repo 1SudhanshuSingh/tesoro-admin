@@ -1,7 +1,7 @@
 import { useMutation, UseMutationResult } from 'react-query';
 import axios from 'axios';
 
-interface ProductData {
+export interface ProductData {
   categoryId: string;
   productName: string;
   productDescription: string;
