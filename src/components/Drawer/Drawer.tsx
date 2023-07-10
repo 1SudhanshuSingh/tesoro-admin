@@ -1,6 +1,6 @@
 import React from "react";
 import { List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import SettingsIcon from "@mui/icons-material/Settings";
 import classes from "./Drawer.module.scss";
