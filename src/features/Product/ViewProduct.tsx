@@ -70,7 +70,11 @@ const ViewProduct: React.FC = () => {
         }}
       >
         <h3>View Products</h3>
-        <Fab color="primary" aria-label="add" onClick={() => navigate('./create')}>
+        <Fab
+          color="primary"
+          aria-label="add"
+          onClick={() => navigate("./createProduct")}
+        >
           <GridAddIcon />
         </Fab>
       </Box>
