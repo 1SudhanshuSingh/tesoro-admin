@@ -1,30 +1,30 @@
 import { useMutation, UseMutationResult } from "react-query";
 import axios from "axios";
 
-export interface ProductData {
+export interface ItemData {
   categoryId: number;
-  productName: string;
-  productDescription: string;
-  productImage: File;
-  productActive: boolean;
-  productSequence: number;
-  productFilterlist: string;
+  ItemName: string;
+  ItemDescription: string;
+  ItemImage: File;
+  ItemActive: boolean;
+  ItemSequence: number;
+  ItemFilterlist: string;
 }
 
-const createProduct = async (productData: ProductData): Promise<object> => {
+const createItem = async (ItemData: ItemData): Promise<object> => {
   try {
     const response = await axios.post(
-      `${import.meta.env.VITE_API_BASE_URL as string}/product/createProduct`,
-      productData
+      `${import.meta.env.VITE_API_BASE_URL as string}/Item/createItem`,
+      ItemData
     );
     return response.data as object;
   } catch (error) {
-    throw new Error("Failed to create product");
+    throw new Error("Failed to create Item");
   }
 };
 
-const useCreateProduct = (): UseMutationResult<any, Error, ProductData> => {
-  return useMutation(createProduct);
+const useCreateItem = (): UseMutationResult<any, Error, ItemData> => {
+  return useMutation(createItem);
 };
 
-export default useCreateProduct;
+export default useCreateItem;
