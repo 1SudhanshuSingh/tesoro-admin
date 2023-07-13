@@ -6,12 +6,18 @@ import {
   Dashboard,
   ViewProduct,
   ViewSubProduct,
+  CreateItem,
+  ViewItem,
+  CreateCategory,
+  ViewCategory,
 } from "./features";
 
 const RouterConfig: React.FC = () => {
   return (
     <Routes>
       <Route path="/" element={<Dashboard />} />
+      <Route path="/category" element={<ViewCategory />} />
+      <Route path="/category/createCategory" element={<CreateCategory />} />
       <Route path="/product" element={<ViewProduct />} />
       <Route path="/product/createProduct" element={<CreateProduct />} />
       <Route path="/subproduct" element={<ViewSubProduct />} />
@@ -19,6 +25,8 @@ const RouterConfig: React.FC = () => {
         path="/subproduct/createSubProduct"
         element={<CreateSubProduct />}
       />
+      <Route path="/item" element={<ViewItem />} />
+      <Route path="/item/createItem" element={<CreateItem />} />
     </Routes>
   );
 };

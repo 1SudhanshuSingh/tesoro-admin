@@ -1,46 +1,41 @@
 import * as React from "react";
-import { Box, Chip, Fab } from "@mui/material";
+import { useState } from "react";
+import {
+  Box,
+  Chip,
+  Fab,
+  FormControl,
+  Select,
+  MenuItem,
+  InputLabel,
+} from "@mui/material";
 import { DataGrid, GridAddIcon, GridColDef } from "@mui/x-data-grid";
 import { dummyProd } from "./Dummy";
 import { useNavigate } from "react-router";
+import { SelectChangeEvent } from "@mui/material";
 
 interface RowData {
   id: number;
   prod_catID: number;
   prod_active: string;
   prod_name: string;
-  prod_description: string;
-  prod_image: string;
   prod_type: { id: number; value: string }[];
   prod_sequence: number;
   prod_filterList: { id: number; value: string }[];
 }
 
 const columns: GridColDef[] = [
-  { field: "id", headerName: "Prod. ID", width: 100 },
-  { field: "prod_catID", headerName: "Prod Cat. ID ", width: 100 },
-  { field: "prod_active", headerName: "Active", width: 100 },
-  { field: "prod_name", headerName: "Prod. name", width: 100 },
-  { field: "prod_description", headerName: "Prod. Desc.", width: 100 },
-  { field: "prod_image", headerName: "Prod. image", width: 100 },
+  { field: "id", headerName: "Prod. ID" },
   {
-    field: "prod_type",
-    headerName: "Prod. type",
-    width: 300,
-    renderCell: (params) => {
-      const prodtype = params.value as { id: number; value: string }[];
-      return (
-        <div>
-          {prodtype.map((type) => (
-            <Chip key={type.id} label={type.value} color="primary" />
-          ))}
-        </div>
-      );
-    },
+    field: "prod_catID",
+    headerName: "CatID",
   },
+  { field: "prod_active", headerName: "Active" },
+  { field: "prod_name", headerName: "Name" },
+  { field: "prod_sequence", headerName: "Sequence" },
   {
     field: "prod_filterList",
-    headerName: "Prod. FilterList",
+    headerName: "FilterList",
     width: 300,
     renderCell: (params) => {
       const prodtype = params.value as { id: number; value: string }[];
@@ -53,13 +48,23 @@ const columns: GridColDef[] = [
       );
     },
   },
-  { field: "prod_sequence", headerName: "Prod. seq.", width: 100 },
 ];
 
 const rows: RowData[] = dummyProd;
 
 const ViewProduct: React.FC = () => {
   const navigate = useNavigate();
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const handleChangeCategory = (event: SelectChangeEvent<string>) => {
+    setSelectedCategory(event.target.value);
+  };
+
+  // const filteredRows = selectedCategory
+  //   ? rows.filter((row) => row.category === selectedCategory)
+  //   : rows;
+  const filteredRows = selectedCategory
+    ? rows.filter((row) => row.prod_catID === parseInt(selectedCategory))
+    : dummyProd;
   return (
     <div>
       <Box
@@ -69,7 +74,7 @@ const ViewProduct: React.FC = () => {
           padding: "1rem",
         }}
       >
-        <h3>View Products</h3>
+        <h3>All Products</h3>
         <Fab
           color="primary"
           aria-label="add"
@@ -78,16 +83,50 @@ const ViewProduct: React.FC = () => {
           <GridAddIcon />
         </Fab>
       </Box>
-      <DataGrid
-        rows={rows}
-        columns={columns}
-        initialState={{
-          pagination: {
-            paginationModel: { page: 0, pageSize: 5 },
-          },
+      <Box
+        sx={{
+          padding: "1rem",
         }}
-        pageSizeOptions={[10, 20]}
-      />
+      >
+        {/* dropdown */}
+        <FormControl fullWidth>
+          <InputLabel id="category_Dropdown">Choose Category</InputLabel>
+          <Select
+            labelId="category_Dropdown"
+            id="select_category_Dropdown"
+            value={selectedCategory}
+            label="Choose Category"
+            fullWidth
+            onChange={handleChangeCategory}
+          >
+            <MenuItem value="">All</MenuItem>
+            <MenuItem value="Category1">Category 1</MenuItem>
+            <MenuItem value="Category2">Category 2</MenuItem>
+            <MenuItem value="Category3">Category 3</MenuItem>
+          </Select>
+        </FormControl>
+
+        <DataGrid
+          // rows={filteredRows}
+          rows={filteredRows.map((row) => ({
+            ...row,
+            // or any other flex value
+          }))}
+          columns={columns.map((column) => ({
+            ...column,
+            flex: 1, // or any other flex value
+            align: "center",
+            headerAlign: "center",
+            width: 100,
+          }))}
+          initialState={{
+            pagination: {
+              paginationModel: { page: 0, pageSize: 5 },
+            },
+          }}
+          pageSizeOptions={[10, 20]}
+        />
+      </Box>
     </div>
   );
 };
