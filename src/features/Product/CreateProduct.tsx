@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   Button,
   FormControlLabel,
@@ -7,11 +8,8 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import {
-  ChipsArray,
-  MultipleSelectChip,
-} from "../../components";
-import { useState } from "react";
+import { ChipsArray, MultipleSelectChip } from "../../components";
+// import useCreateProduct from "../../hooks/Product/useCreateProduct";
 import { OptionData } from "./Dummy";
 import FilterModal from "./components/FiltesModal";
 import OptionModal from "./components/OptionModal";
@@ -20,7 +18,8 @@ import useCreateMasterFilter from "../../hooks/Filter/useCreateMasterFilter";
 
 const CreateProduct: React.FC = () => {
   const [prodId, setProdId] = useState<number>(0);
-  const { isLoading, filterData, refetch } = useFiltersAvailableForProdId(prodId);
+  const { isLoading, filterData, refetch } =
+    useFiltersAvailableForProdId(prodId);
   const { createMasterFilter, data: createdDataRes } = useCreateMasterFilter();
 
   const [activeOption, setActiveOption] = useState<string>("");
@@ -47,15 +46,15 @@ const CreateProduct: React.FC = () => {
   const handleCreateFilter = async (filterName: string) => {
     await createMasterFilter({
       filterName,
-      filterOptions: '[]',
-    })
+      filterOptions: "[]",
+    });
     await refetch();
   };
   return (
     <>
       <h3>Create Product</h3>
       <Grid container gap={2}>
-        <Grid xs={6}>
+        <Grid item xs={6}>
           <MultipleSelectChip
             title="Category"
             data={["cat1", "cat2", "cat3"]}
@@ -73,10 +72,10 @@ const CreateProduct: React.FC = () => {
             />
           </Grid>
           <Grid container marginTop={2}>
-            <Grid sm={2}>
+            <Grid item sm={2}>
               <Typography>Active</Typography>
             </Grid>
-            <Grid sm={10}>
+            <Grid item sm={10}>
               <RadioGroup
                 aria-label="active"
                 name="active"
@@ -92,7 +91,10 @@ const CreateProduct: React.FC = () => {
             <TextField label="Product Sequence" fullWidth />
           </Grid>
           <Grid container marginTop={2}>
-            <ChipsArray title="Manage Filter" data={prodId === 0 ? [] : filterData} />
+            <ChipsArray
+              title="Manage Filter"
+              data={prodId === 0 ? [] : filterData}
+            />
           </Grid>
           <Grid container marginY={2}>
             <Button
@@ -112,7 +114,7 @@ const CreateProduct: React.FC = () => {
         getFilterId={getFilterId}
         // eslint-disable-next-line @typescript-eslint/no-misused-promises
         handleCreateFilter={handleCreateFilter}
-        />
+      />
       <OptionModal
         data={OptionData}
         show={showAttachOption}

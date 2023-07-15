@@ -1,186 +1,165 @@
-import React from "react";
-import { useState } from "react";
-import { Formik, Field, Form, ErrorMessage} from "formik";
-import * as Yup from "yup";
+import React, { useState } from "react";
 import {
-  TextField,
+  Button,
   Checkbox,
   FormControlLabel,
-  Button,
+  FormControl,
+  TextField,
+  Box,
   Grid,
+  InputAdornment,
 } from "@mui/material";
+import AddPhotoAlternateRoundedIcon from "@mui/icons-material/AddPhotoAlternateRounded";
+import CurrencyRupeeRoundedIcon from "@mui/icons-material/CurrencyRupeeRounded";
 import useCreateItem from "../../hooks/Product/useCreateItem";
-
-const validationSchema = Yup.object().shape({
-  categoryId: Yup.number().required("Category is required"),
-  ItemName: Yup.string().required("Item name is required"),
-  ItemDescription: Yup.string().required("Item description is required"),
-  ItemImage: Yup.mixed().required("Item image is required"), //check
-  ItemActive: Yup.boolean().required("Item active status is required"),
-  ItemSequence: Yup.number().required("Item sequence is required"),
-  ItemFilterlist: Yup.string().required("Item filter list is required"), //check
-});
 
 const CreateItem: React.FC = () => {
   const createItemMutation = useCreateItem();
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const handleSubmit = (values: any) => {
-    console.log(values);
-    createItemMutation.mutate(values);
+  const [imagePreviews, setImagePreviews] = useState<File[]>([]);
+  // const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.currentTarget);
+    const ItemData = {
+      subProdId: Number(formData.get("subProdId")),
+      ItemSku: formData.get("ItemSku") as string,
+      ItemQty: Number(formData.get("ItemQty")),
+      ItemActive: Boolean(formData.get("ItemActive")),
+      ItemDetail: formData.get("ItemDetail") as string,
+      // ItemImage: formData.get("ItemImage") as unknown as FileList,
+      ItemImage: imageFiles,
+      ItemPrice: Number(formData.get("ItemPrice")),
+      ItemFilterValues: (formData.get("ItemFilterValues") as string).split(","),
+    };
+    console.log("data :", ItemData);
+    createItemMutation.mutate(ItemData);
+  };
+
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.currentTarget.files;
+
+    if (files && files.length > 0) {
+      const selectedFiles: File[] = Array.from(files);
+      console.log("selectedFiles:", selectedFiles);
+      setImageFiles(selectedFiles);
+      setImagePreviews(selectedFiles);
+    } else {
+      setImagePreviews([]);
+    }
   };
 
   return (
     <div>
       <h3>Create Item</h3>
-      <Formik
-        initialValues={{
-          categoryId: "",
-          productName: "",
-          productDescription: "",
-          productImage: null,
-          productActive: false,
-          productSequence: 0,
-          productFilterlist: "",
-        }}
-        validationSchema={validationSchema}
-        onSubmit={handleSubmit}
-      >
-        {({ values, setFieldValue }) => (
-          <Form style={{ gap: "10px" }}>
-            <div>
-              <Field
-                as={TextField}
-                type="text"
-                id="categoryId"
-                name="categoryId"
-                label="Category"
+      <form onSubmit={handleSubmit}>
+        <FormControl
+          style={{ display: "flex", gap: "10px", margin: "20px" }}
+          focused
+        >
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Sub ProdId"
+                name="subProdId"
+                type="number"
+                fullWidth
               />
-            </div>
-
-            <div>
-              <Field
-                as={TextField}
-                type="text"
-                id="productName"
-                name="productName"
-                label="Product Name"
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField label="ItemSku" name="ItemSku" fullWidth />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="ItemQty"
+                name="ItemQty"
+                type="number"
+                fullWidth
               />
-            </div>
-
-            <div>
-              <Field
-                as={TextField}
-                type="text"
-                id="productDescription"
-                name="productDescription"
-                label="Product Description"
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Item Detail"
+                name="ItemDetail"
+                multiline
+                fullWidth
               />
-            </div>
-
-            <div>
-              <Grid
-                item
-                xs={12}
-                sm={6}
-                style={{ display: "flex", alignItems: "center" }}
-                component="div"
+            </Grid>
+            <Grid item xs={12}>
+              <label htmlFor="ItemImage">
+                <Button variant="contained" component="span">
+                  <AddPhotoAlternateRoundedIcon sx={{ mr: 1, my: 0.5 }} />
+                  Choose Item Image
+                </Button>
+                <input
+                  accept="image/*"
+                  type="file"
+                  id="ItemImage"
+                  name="ItemImage"
+                  placeholder="choose Item"
+                  multiple
+                  onChange={handleImageChange}
+                  style={{ display: "none" }}
+                />
+              </label>
+            </Grid>
+            <Grid item xs={12}>
+              <Box
+                sx={{
+                  display: imagePreviews.length ? "flex" : "none",
+                  flexWrap: "wrap",
+                  alignItems: "flex-end",
+                  border: "1px dashed rgb(25, 118, 210)",
+                  columnWidth: "fit-content",
+                }}
               >
-                <label htmlFor="productImage">
-                  <Button variant="contained" component="span">
-                    Choose Product
-                  </Button>
-                  <input
-                    accept="image/*"
-                    type="file"
-                    id="productImage"
-                    name="productImage"
-                    placeholder="choose Product"
-                    onChange={(event) => {
-                      const file =
-                        event.currentTarget.files &&
-                        event.currentTarget.files[0];
-                      setFieldValue("productImage", file);
-                      console.log("file:", file);
-                      if (file) {
-                        const reader = new FileReader();
-                        reader.onloadend = () => {
-                          setImagePreview(reader.result as string);
-                        };
-                        reader.readAsDataURL(file);
-                      } else {
-                        setImagePreview(null);
-                      }
-                    }}
-                    style={{ display: "none" }}
-                  />
-                </label>
-                {imagePreview && (
+                {imagePreviews.map((file, index) => (
                   <img
-                    src={imagePreview}
-                    alt="Product Preview"
+                    key={index}
+                    src={URL.createObjectURL(file)}
+                    alt={`Item Preview ${index + 1}`}
                     style={{
                       width: "100px",
                       height: "100px",
                       borderRadius: "10%",
+                      margin: "5px",
                     }}
                   />
-                )}
-                <ErrorMessage
-                  name="productImage"
-                  component="div"
-                  className="error"
-                />
-              </Grid>
-            </div>
-
-            <div>
+                ))}
+              </Box>
+            </Grid>
+            <Grid item xs={12} sm={6}>
               <FormControlLabel
-                control={
-                  <Checkbox
-                    id="productActive"
-                    name="productActive"
-                    color="primary"
-                    checked={values.productActive}
-                    onChange={(event) => {
-                      setFieldValue("productActive", event.target.checked);
-                    }}
-                  />
-                }
-                label="Active"
+                control={<Checkbox name="ItemActive" color="primary" />}
+                label="Item Active"
               />
-              <ErrorMessage
-                name="productActive"
-                component="div"
-                className="error"
-              />
-            </div>
-
-            <div>
-              <Field
-                as={TextField}
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="Item Price"
+                name="ItemPrice"
                 type="number"
-                id="productSequence"
-                name="productSequence"
-                label="Product Sequence"
+                fullWidth
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <CurrencyRupeeRoundedIcon />
+                    </InputAdornment>
+                  ),
+                }}
               />
-            </div>
-
-            <div>
-              <Field
-                as={TextField}
-                type="text"
-                id="productFilterlist"
-                name="productFilterlist"
-                label="Product Filter List"
-              />
-            </div>
-            <hr style={{ border: "0px" }} />
-            <Button type="submit" variant="contained" color="primary">
-              Save
-            </Button>
-          </Form>
-        )}
-      </Formik>
+            </Grid>
+            <Grid item xs={12}>
+              <TextField label="Item Filter List" name="ItemFilterValues" />
+            </Grid>
+          </Grid>
+          <Button type="submit" variant="contained" color="primary">
+            Create
+          </Button>
+        </FormControl>
+      </form>
     </div>
   );
 };
