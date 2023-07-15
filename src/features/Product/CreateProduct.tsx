@@ -4,43 +4,14 @@ import {
   Checkbox,
   FormControlLabel,
   FormControl,
-  TextField,
-} from "@mui/material";
-import useCreateProduct from "../../hooks/Product/useCreateProduct";
-const Createproduct: React.FC = () => {
-  const createProductMutation = useCreateProduct();
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    const formData = new FormData(e.currentTarget);
-    const ProductData = {
-      categoryId: Number(formData.get("productId")),
-      productName: formData.get("productName") as string,
-      productDescription: formData.get("productDescription") as string,
-      productImage: formData.get("productImage") as File,
-      // productImage: formData.get("ProductImage") as File,
-      productActive: Boolean(formData.get("productActive")),
-      productSequence: Number(formData.get("productSequence")),
-      productFilterlist: formData.get("productFilterlist") as string,
-    };
-    console.log("data :", ProductData);
-    createProductMutation.mutate(ProductData);
-import {
-  Button,
-  FormControlLabel,
   Grid,
   Radio,
   RadioGroup,
   TextField,
   Typography,
 } from "@mui/material";
-import {
-  ChipsArray,
-  MultipleSelectChip,
-} from "../../components";
-import { useState } from "react";
+import { ChipsArray, MultipleSelectChip } from "../../components";
+import useCreateProduct from "../../hooks/Product/useCreateProduct";
 import { OptionData } from "./Dummy";
 import FilterModal from "./components/FiltesModal";
 import OptionModal from "./components/OptionModal";
@@ -49,7 +20,8 @@ import useCreateMasterFilter from "../../hooks/Filter/useCreateMasterFilter";
 
 const CreateProduct: React.FC = () => {
   const [prodId, setProdId] = useState<number>(0);
-  const { isLoading, filterData, refetch } = useFiltersAvailableForProdId(prodId);
+  const { isLoading, filterData, refetch } =
+    useFiltersAvailableForProdId(prodId);
   const { createMasterFilter, data: createdDataRes } = useCreateMasterFilter();
 
   const [activeOption, setActiveOption] = useState<string>("");
@@ -76,11 +48,111 @@ const CreateProduct: React.FC = () => {
   const handleCreateFilter = async (filterName: string) => {
     await createMasterFilter({
       filterName,
-      filterOptions: '[]',
-    })
+      filterOptions: "[]",
+    });
     await refetch();
   };
   return (
+    <>
+      <h3>Create Product</h3>
+      <Grid container gap={2}>
+        <Grid xs={6}>
+          <MultipleSelectChip
+            title="Category"
+            data={["cat1", "cat2", "cat3"]}
+          />
+          <Grid padding={1} marginTop={2}>
+            <TextField label="Product Name" fullWidth />
+          </Grid>
+          <Grid padding={1} marginTop={2}>
+            <TextField
+              label="Text Area"
+              multiline
+              fullWidth
+              rows={4}
+              variant="filled"
+            />
+          </Grid>
+          <Grid container marginTop={2}>
+            <Grid sm={2}>
+              <Typography>Active</Typography>
+            </Grid>
+            <Grid sm={10}>
+              <RadioGroup
+                aria-label="active"
+                name="active"
+                value={activeOption}
+                onChange={handleOptionChange}
+              >
+                <FormControlLabel value="yes" control={<Radio />} label="Yes" />
+                <FormControlLabel value="no" control={<Radio />} label="No" />
+              </RadioGroup>
+            </Grid>
+          </Grid>
+          <Grid padding={1} marginTop={2}>
+            <TextField label="Product Sequence" fullWidth />
+          </Grid>
+          <Grid container marginTop={2}>
+            <ChipsArray
+              title="Manage Filter"
+              data={prodId === 0 ? [] : filterData}
+            />
+          </Grid>
+          <Grid container marginY={2}>
+            <Button
+              variant="outlined"
+              onClick={() => setShowAttachNewFilter(true)}
+            >
+              Attach New Filter
+            </Button>
+          </Grid>
+        </Grid>
+      </Grid>
+      <FilterModal
+        prodId={prodId}
+        data={filterData}
+        show={showAttachNewFilter}
+        handleShow={setShowAttachNewFilter}
+        getFilterId={getFilterId}
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        handleCreateFilter={handleCreateFilter}
+      />
+      <OptionModal
+        data={OptionData}
+        show={showAttachOption}
+        handleShow={setShowAttachOption}
+        handleBackToFilter={handleBackToFilter}
+      />
+    </>
+  );
+};
+
+export default CreateProduct;
+
+/*
+const Createproduct: React.FC = () => {
+  const createProductMutation = useCreateProduct();
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.currentTarget);
+    const ProductData = {
+      categoryId: Number(formData.get("productId")),
+      productName: formData.get("productName") as string,
+      productDescription: formData.get("productDescription") as string,
+      productImage: formData.get("productImage") as File,
+      // productImage: formData.get("ProductImage") as File,
+      productActive: Boolean(formData.get("productActive")),
+      productSequence: Number(formData.get("productSequence")),
+      productFilterlist: formData.get("productFilterlist") as string,
+    };
+    console.log("data :", ProductData);
+    createProductMutation.mutate(ProductData);
+
+return (
+    
     <div>
       <h3>Create Product</h3>
       <form onSubmit={handleSubmit}>
@@ -135,7 +207,7 @@ const CreateProduct: React.FC = () => {
                 borderRadius: "10%",
               }}
             />
-          )}*/}
+          )}}
 
           <input type="file" name="productImage" required />
           <FormControlLabel
@@ -159,78 +231,7 @@ const CreateProduct: React.FC = () => {
         </FormControl>
       </form>
     </div>
-    <>
-      <h3>Create Product</h3>
-      <Grid container gap={2}>
-        <Grid xs={6}>
-          <MultipleSelectChip
-            title="Category"
-            data={["cat1", "cat2", "cat3"]}
-          />
-          <Grid padding={1} marginTop={2}>
-            <TextField label="Product Name" fullWidth />
-          </Grid>
-          <Grid padding={1} marginTop={2}>
-            <TextField
-              label="Text Area"
-              multiline
-              fullWidth
-              rows={4}
-              variant="filled"
-            />
-          </Grid>
-          <Grid container marginTop={2}>
-            <Grid sm={2}>
-              <Typography>Active</Typography>
-            </Grid>
-            <Grid sm={10}>
-              <RadioGroup
-                aria-label="active"
-                name="active"
-                value={activeOption}
-                onChange={handleOptionChange}
-              >
-                <FormControlLabel value="yes" control={<Radio />} label="Yes" />
-                <FormControlLabel value="no" control={<Radio />} label="No" />
-              </RadioGroup>
-            </Grid>
-          </Grid>
-          <Grid padding={1} marginTop={2}>
-            <TextField label="Product Sequence" fullWidth />
-          </Grid>
-          <Grid container marginTop={2}>
-            <ChipsArray title="Manage Filter" data={prodId === 0 ? [] : filterData} />
-          </Grid>
-          <Grid container marginY={2}>
-            <Button
-              variant="outlined"
-              onClick={() => setShowAttachNewFilter(true)}
-            >
-              Attach New Filter
-            </Button>
-          </Grid>
-        </Grid>
-      </Grid>
-      <FilterModal
-        prodId={prodId}
-        data={filterData}
-        show={showAttachNewFilter}
-        handleShow={setShowAttachNewFilter}
-        getFilterId={getFilterId}
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        handleCreateFilter={handleCreateFilter}
-        />
-      <OptionModal
-        data={OptionData}
-        show={showAttachOption}
-        handleShow={setShowAttachOption}
-        handleBackToFilter={handleBackToFilter}
-      />
-    </>
-  );
-};
-
-export default Createproduct;
+*/
 
 // import React from "react";
 // import { useState, useEffect, ChangeEvent, FormEvent } from "react";
