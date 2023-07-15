@@ -1,3 +1,161 @@
+import { FilterData as FilterDataArr, OptionData as OptionDataArr} from "./types";
+
+export const FilterData:FilterDataArr = [
+  {
+    id: 1,
+    label: "Color"
+  },
+  {
+    id: 2,
+    label: "Size"
+  },
+  {
+    id: 3,
+    label: "Wear"
+  },
+  {
+    id: 4,
+    label: "Season"
+  },
+  {
+    id: 5,
+    label: "Color"
+  },
+  {
+    id: 6,
+    label: "Size"
+  },
+  {
+    id: 7,
+    label: "Wear"
+  },
+  {
+    id: 4,
+    label: "Season"
+  },
+  {
+    id: 1,
+    label: "Color"
+  },
+  {
+    id: 2,
+    label: "Size"
+  },
+  {
+    id: 3,
+    label: "Wear"
+  },
+  {
+    id: 4,
+    label: "Season"
+  },
+  {
+    id: 1,
+    label: "Color"
+  },
+  {
+    id: 2,
+    label: "Size"
+  },
+  {
+    id: 3,
+    label: "Wear"
+  },
+  {
+    id: 4,
+    label: "Season"
+  },
+  {
+    id: 1,
+    label: "Color"
+  },
+  {
+    id: 2,
+    label: "Size"
+  },
+  {
+    id: 3,
+    label: "Wear"
+  },
+  {
+    id: 4,
+    label: "Season"
+  },
+  {
+    id: 1,
+    label: "Color"
+  },
+  {
+    id: 2,
+    label: "Size"
+  },
+  {
+    id: 3,
+    label: "Wear"
+  },
+  {
+    id: 4,
+    label: "Season"
+  },
+  {
+    id: 1,
+    label: "Color"
+  },
+  {
+    id: 2,
+    label: "Size"
+  },
+  {
+    id: 3,
+    label: "Wear"
+  },
+  {
+    id: 4,
+    label: "Season"
+  },
+  {
+    id: 1,
+    label: "Color"
+  },
+  {
+    id: 2,
+    label: "Size"
+  },
+  {
+    id: 3,
+    label: "Wear"
+  },
+  {
+    id: 4,
+    label: "Season"
+  },
+  {
+    id: 1,
+    label: "Color"
+  },
+  {
+    id: 2,
+    label: "Size"
+  },
+  {
+    id: 3,
+    label: "Wear"
+  },
+  {
+    id: 4,
+    label: "Season"
+  },
+] 
+export const OptionData: OptionDataArr = [
+  {
+    id: 1,
+    label: "XL"
+  },
+  {
+    id: 2,
+    label: "M"
+  },
+] 
 export const dummyProd = [
   /*
   {
