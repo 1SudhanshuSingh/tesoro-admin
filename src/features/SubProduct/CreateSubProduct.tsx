@@ -8,7 +8,7 @@ import {
   FormControlLabel,
   Button,
   Grid,
-} from "@material-ui/core";
+} from "@mui/material";
 import useCreateSubProduct from "../../hooks/Product/useCreateSubProduct";
 
 const validationSchema = Yup.object().shape({

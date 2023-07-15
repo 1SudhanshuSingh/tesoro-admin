@@ -15,7 +15,7 @@ import {
   FormControlLabel,
   Button,
   Grid,
-} from "@material-ui/core";
+} from "@mui/material";
 import useCreateCategory from "../../hooks/Category/useCreateCategory";
 interface FilterOption {
   value: string;
