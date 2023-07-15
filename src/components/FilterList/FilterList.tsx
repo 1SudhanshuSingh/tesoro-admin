@@ -1,13 +1,31 @@
 import React, { useState } from "react";
-import { Typography, Box, Checkbox, TextField, Grid, Button } from "@mui/material";
+import {
+  Typography,
+  Box,
+  Checkbox,
+  TextField,
+  Grid,
+  Button,
+} from "@mui/material";
 import { Filter } from "../../hooks/Filter/useFiltersAvailableForProdId";
 
 interface FilterListProps {
   filters: Filter[] | null;
-  sendFilterId: (id: number) => void;
+  showOption?: boolean;
+  showAttachNew?: boolean;
+  newFilterHandler?: () => void;
+  setCreateNew?: () => void;
+  handleFilter: (id: number) => void;
 }
 
-const FilterList: React.FC<FilterListProps> = ({ filters, sendFilterId }) => {
+const FilterList: React.FC<FilterListProps> = ({
+  filters,
+  showOption,
+  showAttachNew,
+  newFilterHandler,
+  setCreateNew,
+  handleFilter,
+}) => {
   const [selectedFilters, setSelectedFilters] = useState<number[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -34,7 +52,7 @@ const FilterList: React.FC<FilterListProps> = ({ filters, sendFilterId }) => {
   const filterMatchesSearchTerm = (filter: Filter) => {
     return filter.filter_name?.toLowerCase().includes(searchTerm.toLowerCase());
   };
-  
+
   return (
     <>
       <TextField
@@ -46,33 +64,53 @@ const FilterList: React.FC<FilterListProps> = ({ filters, sendFilterId }) => {
       />
       <div style={{ maxHeight: "60vh", overflow: "auto", marginTop: "1rem" }}>
         <Box>
-          {filters && filters.map((filter) =>
-            filterMatchesSearchTerm(filter) ? (
-              <Box
-                key={filter.filter_id}
-                display="flex"
-                alignItems="center"
-                justifyContent="space-between"
-              >
-                <Box display="flex" alignItems="center">
-                  <Checkbox
-                    checked={selectedFilters.includes(filter.filter_id)}
-                    onChange={() => handleFilterToggle(filter.filter_id)}
-                  />
-                  <Typography variant="body1" marginRight={2}>{filter.filter_name}</Typography>
-                  <Button variant="text" onClick={() => sendFilterId(filter.filter_id)}>Options</Button>
+          {filters &&
+            filters.map((filter) =>
+              filterMatchesSearchTerm(filter) ? (
+                <Box
+                  key={filter.filter_id}
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="space-between"
+                >
+                  <Box display="flex" alignItems="center">
+                    <Checkbox
+                      checked={selectedFilters.includes(filter.filter_id)}
+                      onChange={() => handleFilterToggle(filter.filter_id)}
+                    />
+                    {showOption ? (
+                      <Button
+                        variant="text"
+                        onClick={() => handleFilter(filter.filter_id)}
+                      >
+                        {filter.filter_name}
+                      </Button>
+                    ) : (
+                      <Typography>{filter.filter_name}</Typography>
+                    )}
+                  </Box>
                 </Box>
-              </Box>
-            ) : null
-          )}
+              ) : null
+            )}
         </Box>
       </div>
-      <Grid container gap={2}>
+      <Grid container gap={2} marginTop={2}>
         <Grid>
-            <Button variant="outlined">Cancel</Button>
+          <Button variant="outlined">Cancel</Button>
         </Grid>
         <Grid>
-            <Button variant="contained">Submit</Button>
+          <Button variant="contained">Submit</Button>
+        </Grid>
+        <Grid>
+          {showAttachNew ? (
+            <Button variant="contained" onClick={newFilterHandler}>
+              Attach New
+            </Button>
+          ) : (
+            <Button variant="contained" onClick={setCreateNew}>
+              Create New
+            </Button>
+          )}
         </Grid>
       </Grid>
     </>

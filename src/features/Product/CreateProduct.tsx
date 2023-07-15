@@ -91,17 +91,14 @@ const CreateProduct: React.FC = () => {
             <TextField label="Product Sequence" fullWidth />
           </Grid>
           <Grid container marginTop={2}>
-            <ChipsArray
-              title="Manage Filter"
-              data={prodId === 0 ? [] : filterData}
-            />
+            <ChipsArray title="Manage Filter" data={filterData} />
           </Grid>
           <Grid container marginY={2}>
             <Button
               variant="outlined"
               onClick={() => setShowAttachNewFilter(true)}
             >
-              Attach New Filter
+              Manage Filters
             </Button>
           </Grid>
         </Grid>

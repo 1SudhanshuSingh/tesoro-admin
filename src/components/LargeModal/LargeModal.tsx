@@ -32,6 +32,7 @@ const LargeModal: React.FC<LargeModalProps> = ({
         <Box
           sx={{
             position: "absolute",
+            top: "0",
             width: "90%",
             margin: "0 5%",
             bgcolor: "background.paper",
