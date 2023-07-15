@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import {
   Button,
-  Checkbox,
   FormControlLabel,
-  FormControl,
   Grid,
   Radio,
   RadioGroup,
@@ -11,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import { ChipsArray, MultipleSelectChip } from "../../components";
-import useCreateProduct from "../../hooks/Product/useCreateProduct";
+// import useCreateProduct from "../../hooks/Product/useCreateProduct";
 import { OptionData } from "./Dummy";
 import FilterModal from "./components/FiltesModal";
 import OptionModal from "./components/OptionModal";
@@ -56,7 +54,7 @@ const CreateProduct: React.FC = () => {
     <>
       <h3>Create Product</h3>
       <Grid container gap={2}>
-        <Grid xs={6}>
+        <Grid item xs={6}>
           <MultipleSelectChip
             title="Category"
             data={["cat1", "cat2", "cat3"]}
@@ -74,10 +72,10 @@ const CreateProduct: React.FC = () => {
             />
           </Grid>
           <Grid container marginTop={2}>
-            <Grid sm={2}>
+            <Grid item sm={2}>
               <Typography>Active</Typography>
             </Grid>
-            <Grid sm={10}>
+            <Grid item sm={10}>
               <RadioGroup
                 aria-label="active"
                 name="active"

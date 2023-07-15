@@ -31,7 +31,7 @@ const ChipsArray: React.FC<ChipProps> = ({ title, data }) => {
       <Typography marginBottom={2}>
         {title}
       </Typography>
-      <Grid sm={12}>
+      <Grid item sm={12}>
         <Paper
           sx={{
             display: "flex",
