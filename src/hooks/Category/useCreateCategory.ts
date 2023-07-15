@@ -2,7 +2,7 @@ import { useMutation, UseMutationResult } from "react-query";
 import axios from "axios";
 
 export interface CategoryData {
-  categoryId: number;
+  CategoryId: number;
   CategoryName: string;
   CategoryDescription: string;
   CategoryImage: File;

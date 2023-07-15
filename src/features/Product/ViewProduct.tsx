@@ -8,11 +8,11 @@ import {
   Select,
   MenuItem,
   InputLabel,
+  Button,
 } from "@mui/material";
 import { DataGrid, GridAddIcon, GridColDef } from "@mui/x-data-grid";
 import { dummyProd } from "./Dummy";
 import { useNavigate } from "react-router";
-import { SelectChangeEvent } from "@mui/material";
 
 interface RowData {
   id: number;
@@ -55,16 +55,16 @@ const rows: RowData[] = dummyProd;
 const ViewProduct: React.FC = () => {
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState("");
-  const handleChangeCategory = (event: SelectChangeEvent<string>) => {
-    setSelectedCategory(event.target.value);
-  };
+  const [staticRows] = useState(rows);
+  const [filteredRows, setFilteredRows] = useState(rows);
+  const handleFind = () => {
+    const filteredCategory = filteredRows.filter(
+      (row) => row?.id === parseInt(selectedCategory)
+    );
 
-  // const filteredRows = selectedCategory
-  //   ? rows.filter((row) => row.category === selectedCategory)
-  //   : rows;
-  const filteredRows = selectedCategory
-    ? rows.filter((row) => row.prod_catID === parseInt(selectedCategory))
-    : dummyProd;
+    console.log("cat", selectedCategory);
+    setFilteredRows(filteredCategory);
+  };
   return (
     <div>
       <Box
@@ -88,24 +88,37 @@ const ViewProduct: React.FC = () => {
           padding: "1rem",
         }}
       >
-        {/* dropdown */}
-        <FormControl fullWidth>
-          <InputLabel id="category_Dropdown">Choose Category</InputLabel>
-          <Select
-            labelId="category_Dropdown"
-            id="select_category_Dropdown"
-            value={selectedCategory}
-            label="Choose Category"
-            fullWidth
-            onChange={handleChangeCategory}
-          >
-            <MenuItem value="">All</MenuItem>
-            <MenuItem value="Category1">Category 1</MenuItem>
-            <MenuItem value="Category2">Category 2</MenuItem>
-            <MenuItem value="Category3">Category 3</MenuItem>
-          </Select>
-        </FormControl>
-
+        <Box
+          sx={{
+            padding: "1rem",
+          }}
+          display="flex"
+          justifyContent="space-between"
+        >
+          {/* dropdown */}
+          <FormControl fullWidth>
+            <InputLabel id="category_Dropdown">Choose Category</InputLabel>
+            <Select
+              labelId="category_Dropdown"
+              id="select_category_Dropdown"
+              value={selectedCategory}
+              label="Choose Category"
+              fullWidth
+              onChange={(event) => {
+                setSelectedCategory(event.target.value);
+                setFilteredRows(staticRows);
+              }}
+            >
+              <MenuItem value="">All</MenuItem>
+              <MenuItem value="Category1">Category 1</MenuItem>
+              <MenuItem value="Category2">Category 2</MenuItem>
+              <MenuItem value="Category3">Category 3</MenuItem>
+            </Select>
+          </FormControl>
+          <Button variant="contained" color="primary" onClick={handleFind}>
+            Find
+          </Button>
+        </Box>
         <DataGrid
           // rows={filteredRows}
           rows={filteredRows.map((row) => ({

@@ -1,0 +1,22 @@
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.form {
+  display: grid;
+  gap: 2;
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+.submitButton {
+  margin-top: 2;
+}
+
+.formControlLabel {
+  margin-left: 0;
+}
