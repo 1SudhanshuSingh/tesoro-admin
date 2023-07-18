@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { Typography, Box, Checkbox, TextField, Grid, Button } from "@mui/material";
+import {
+  Typography,
+  Box,
+  Checkbox,
+  TextField,
+  Grid,
+  Button,
+} from "@mui/material";
 
 interface Option {
   id: number;
@@ -37,7 +44,7 @@ const OptionList: React.FC<OptionListProps> = ({ options }) => {
   const optionMatchesSearchTerm = (option: Option) => {
     return option.label.toLowerCase().includes(searchTerm.toLowerCase());
   };
-  
+
   return (
     <>
       <TextField
@@ -62,7 +69,9 @@ const OptionList: React.FC<OptionListProps> = ({ options }) => {
                     checked={selectedOption.includes(option.id)}
                     onChange={() => handleoptionToggle(option.id)}
                   />
-                  <Typography variant="body1" marginRight={2}>{option.label}</Typography>
+                  <Typography variant="body1" marginRight={2}>
+                    {option.label}
+                  </Typography>
                   <Button variant="text">Options</Button>
                 </Box>
               </Box>
@@ -72,10 +81,10 @@ const OptionList: React.FC<OptionListProps> = ({ options }) => {
       </div>
       <Grid container gap={2}>
         <Grid>
-            <Button variant="outlined">Cancel</Button>
+          <Button variant="outlined">Cancel</Button>
         </Grid>
         <Grid>
-            <Button variant="contained">Submit</Button>
+          <Button variant="contained">Submit</Button>
         </Grid>
       </Grid>
     </>

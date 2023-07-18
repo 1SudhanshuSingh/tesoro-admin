@@ -9,39 +9,26 @@ import {
 } from "@mui/material";
 import { Filter } from "../../hooks/Filter/useFiltersAvailableForProdId";
 
-interface FilterListProps {
+interface SearchProps {
   filters: Filter[] | null;
   showOption?: boolean;
   showAttachNew?: boolean;
   newFilterHandler?: () => void;
   setCreateNew?: () => void;
-  setGlobalFilte?: (id: number) => void;
   handleFilter: (id: number) => void;
-  setAssociatedFiltr?: (id: number) => void;
 }
 
-const FilterList: React.FC<FilterListProps> = ({
+const Search: React.FC<SearchProps> = ({
   filters,
   showOption,
   showAttachNew,
   newFilterHandler,
   setCreateNew,
   handleFilter,
-  setGlobalFilte,
-  setAssociatedFiltr,
 }) => {
   const [selectedFilters, setSelectedFilters] = useState<number[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const handleSubmit = () => {
-    if (setGlobalFilte && selectedFilters.length > 0) {
-      const [firstFilterId] = selectedFilters; // Take the first filter id from the selectedFilters array
-      setGlobalFilte(firstFilterId); // Pass the first filter id as a single number argument
-    }
-    if (setAssociatedFiltr && selectedFilters.length > 0) {
-      const [firstFilterId] = selectedFilters; // Take the first filter id from the selectedFilters array
-      setAssociatedFiltr(firstFilterId); // Pass the first filter id as a single number argument
-    }
-  };
+
   const handleFilterToggle = (filterId: number) => {
     setSelectedFilters((prevSelectedFilters) => {
       if (prevSelectedFilters.includes(filterId)) {
@@ -94,10 +81,7 @@ const FilterList: React.FC<FilterListProps> = ({
                     {showOption ? (
                       <Button
                         variant="text"
-                        onClick={() => {
-                          console.log("handle");
-                          return handleFilter(filter.filter_id);
-                        }}
+                        onClick={() => handleFilter(filter.filter_id)}
                       >
                         {filter.filter_name}
                       </Button>
@@ -115,13 +99,16 @@ const FilterList: React.FC<FilterListProps> = ({
           <Button variant="outlined">Cancel</Button>
         </Grid>
         <Grid>
-          <Button variant="contained" onClick={handleSubmit} >
+          <Button
+            variant="contained"
+            onClick={() => console.log(selectedFilters)}
+          >
             Submit
           </Button>
         </Grid>
         <Grid>
           {showAttachNew ? (
-            <Button variant="contained" onClick={newFilterHandler} >
+            <Button variant="contained" onClick={newFilterHandler}>
               Attach New
             </Button>
           ) : (
@@ -135,4 +122,4 @@ const FilterList: React.FC<FilterListProps> = ({
   );
 };
 
-export default FilterList;
+export default Search;

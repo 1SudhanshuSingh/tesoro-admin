@@ -4,8 +4,8 @@ import { DataGrid, GridAddIcon, GridColDef } from "@mui/x-data-grid";
 import { dummyProd } from "./Dummy";
 import { useNavigate } from "react-router";
 import EditIcon from "@mui/icons-material/Edit";
-import HighlightOffIcon from '@mui/icons-material';
-
+// import DeleteIcon from "@mui/icons-material/Delete";
+import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 interface RowData {
   id: number;
   name: string;
@@ -43,6 +43,7 @@ const columns: GridColDef[] = [
         onClick={() => console.log(params.row.id)}
       >
         <HighlightOffIcon />
+        {/* <DeleteIcon /> */}
       </IconButton>
     ),
   },

@@ -27,7 +27,7 @@ export const Filters = [
     },
   ];
 
-  export const Options = [
+  export const options = [
     {
       id: 1,
       name: "Option 1",
