@@ -1,9 +1,9 @@
-import {
-  FilterData as FilterDataArr,
-  OptionData as OptionDataArr,
-} from "./types";
+// import {
+//   FilterData as FilterDataArr,
+//   OptionData as OptionDataArr,
+// } from "./types";
 
-export const FilterData: FilterDataArr = [
+export const FilterData = [
   {
     id: 1,
     label: "Color",
@@ -149,7 +149,7 @@ export const FilterData: FilterDataArr = [
     label: "Season",
   },
 ];
-export const OptionData: OptionDataArr = [
+export const OptionData = [
   {
     id: 1,
     label: "XL",

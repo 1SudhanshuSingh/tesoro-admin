@@ -8,7 +8,7 @@ export interface Filter {
   row: number;
 }
 
-interface GetAllFiltersAvailableForProdIdResponse {
+interface GetAllFilterOptionsAvailableForFilterIDResponse {
   jsonResponse: Filter[];
   output: number;
   message: string;
@@ -31,12 +31,12 @@ const useFiltersAvailableForProdId = (
   };
 
   const fetchFilters: QueryFunction<
-    AxiosResponse<GetAllFiltersAvailableForProdIdResponse, unknown>,
+    AxiosResponse<GetAllFilterOptionsAvailableForFilterIDResponse, unknown>,
     QueryKey
   > = async () => {
     const response = await axios.post<
-      GetAllFiltersAvailableForProdIdResponse,
-      AxiosResponse<GetAllFiltersAvailableForProdIdResponse, unknown>
+      GetAllFilterOptionsAvailableForFilterIDResponse,
+      AxiosResponse<GetAllFilterOptionsAvailableForFilterIDResponse, unknown>
     >(endpoint, { params });
     return response;
   };
@@ -46,7 +46,7 @@ const useFiltersAvailableForProdId = (
     data: filterData = null,
     refetch,
   } = useQuery<
-    AxiosResponse<GetAllFiltersAvailableForProdIdResponse, unknown>,
+    AxiosResponse<GetAllFilterOptionsAvailableForFilterIDResponse, unknown>,
     unknown,
     Filter[]
   >(["filters", prodId], fetchFilters, {

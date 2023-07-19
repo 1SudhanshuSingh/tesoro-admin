@@ -1,5 +1,5 @@
-import { useMutation, MutationFunction, MutationKey } from 'react-query';
-import axios, { AxiosResponse } from 'axios';
+import { useMutation, MutationFunction, MutationKey } from "react-query";
+import axios, { AxiosResponse } from "axios";
 
 interface Filter {
   filter_id: number;
@@ -17,10 +17,13 @@ const useCreateMasterFilter = (): {
     AxiosResponse<Filter, unknown>,
     CreateMasterFilterRequest
   >;
-  data: Filter | null;
+  // data: Filter | null;
+  data: AxiosResponse<Filter, unknown> | null;
   isLoading: boolean;
 } => {
-  const endpoint = `${import.meta.env.VITE_API_BASE_URL as string}/filter/createMasterFilter`;
+  const endpoint = `${
+    import.meta.env.VITE_API_BASE_URL as string
+  }/filter/createMasterFilter`;
 
   const createMasterFilter: MutationFunction<
     AxiosResponse<Filter, unknown>,

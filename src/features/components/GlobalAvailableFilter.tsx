@@ -7,68 +7,34 @@ import {
   Grid,
   Button,
 } from "@mui/material";
+import { FilterList } from "../../components";
 import { Filter } from "../../hooks/Filter/useFiltersAvailableForProdId";
-
-interface FilterListProps {
+interface GlobalAvailableFilterProps {
   filters: Filter[] | null;
-  showOption?: boolean;
-  showAttachNew?: boolean;
-  newFilterHandler?: () => void;
+  // data: Filter[] | null;
   setCreateNew?: () => void;
-  setGlobalFilte?: (id: number) => void;
+  setGlobalFilte: (id: number) => void;
   handleFilter: (id: number) => void;
-  setAssociatedFiltr?: (id: number) => void;
 }
 
-const FilterList: React.FC<FilterListProps> = ({
+const GlobalAvailableFilter: React.FC<GlobalAvailableFilterProps> = ({
   filters,
-  showOption,
-  showAttachNew,
-  newFilterHandler,
-  setCreateNew,
   handleFilter,
+  setCreateNew,
   setGlobalFilte,
-  setAssociatedFiltr,
 }) => {
-  const [selectedFilters, setSelectedFilters] = useState<number[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const handleSubmit = () => {
-    if (setGlobalFilte && selectedFilters.length > 0) {
-      const [firstFilterId] = selectedFilters; // Take the first filter id from the selectedFilters array
-      setGlobalFilte(firstFilterId); // Pass the first filter id as a single number argument
-    }
-    if (setAssociatedFiltr && selectedFilters.length > 0) {
-      const [firstFilterId] = selectedFilters; // Take the first filter id from the selectedFilters array
-      setAssociatedFiltr(firstFilterId); // Pass the first filter id as a single number argument
-    }
-  };
-  const handleFilterToggle = (filterId: number) => {
-    setSelectedFilters((prevSelectedFilters) => {
-      if (prevSelectedFilters.includes(filterId)) {
-        return prevSelectedFilters.filter(
-          (selectedFilter) => selectedFilter !== filterId
-        );
-      } else {
-        return [...prevSelectedFilters, filterId];
-      }
-    });
-  };
-
-  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const term = event.target.value;
-    setSearchTerm(term);
-    if (!term) {
-      setSelectedFilters([]);
-    }
-  };
-
-  const filterMatchesSearchTerm = (filter: Filter) => {
-    return filter.filter_name?.toLowerCase().includes(searchTerm.toLowerCase());
-  };
-
   return (
-    <>
-      <TextField
+    <Grid item sm={4}>
+      <h3>Globally Available Filters</h3>
+      <FilterList
+        filters={filters} //data
+        handleFilter={handleFilter}
+        // sendFilterId={getFilterId}
+        setGlobalFilte={setGlobalFilte}
+        setCreateNew={setCreateNew}
+      />
+      
+      {/* <TextField
         label="Search"
         variant="outlined"
         value={searchTerm}
@@ -115,13 +81,13 @@ const FilterList: React.FC<FilterListProps> = ({
           <Button variant="outlined">Cancel</Button>
         </Grid>
         <Grid>
-          <Button variant="contained" onClick={handleSubmit} >
+          <Button variant="contained" onClick={}>
             Submit
           </Button>
         </Grid>
         <Grid>
           {showAttachNew ? (
-            <Button variant="contained" onClick={newFilterHandler} >
+            <Button variant="contained" onClick={newFilterHandler}>
               Attach New
             </Button>
           ) : (
@@ -130,9 +96,8 @@ const FilterList: React.FC<FilterListProps> = ({
             </Button>
           )}
         </Grid>
-      </Grid>
-    </>
+      </Grid> */}
+    </Grid>
   );
 };
-
-export default FilterList;
+export default GlobalAvailableFilter;

@@ -1,3 +1,107 @@
+import React, { useState, useEffect } from "react";
+import { Grid } from "@mui/material";
+import { LargeModal } from "../../../components";
+import { Filter } from "../../../hooks/Filter/useFiltersAvailableForProdId";
+import useCreateMasterFilter from "../../../hooks/Filter/useCreateMasterFilter";
+import AssociatedFilter from "../../components/AssociatedFilter";
+import GlobalAvailableFilter from "../../components/GlobalAvailableFilter";
+import CreateNewFilter from "../../components/CreateNewFilter";
+
+interface FilterModalProps {
+  prodId: number;
+  show: boolean;
+  data: Filter[] | null;
+  handleShow: (show: boolean) => void;
+  getFilterId: (id: number) => void;
+  handleCreateFilter: (filterName: string) => void;
+  setAssociatedFiltr:(id: number) => void;
+}
+
+const FilterModal: React.FC<FilterModalProps> = ({
+  prodId,
+  show,
+  data,
+  handleShow,
+  getFilterId,
+  handleCreateFilter,
+  setAssociatedFiltr
+}) => {
+  const [newFilterName, setNewFilterName] = useState("");
+  const [globalFilter, setGlobalFilter] = useState<number[]>([]);
+  // setNumbers((prevNumbers) => [...prevNumbers, value]);
+  const setGlobalFilte = (id: number) => {
+    setGlobalFilter((prevNumbers) => [...prevNumbers, id]);
+    console.log("fg", globalFilter);
+  };
+  useEffect(() => {
+    console.log("globalfilter", globalFilter);
+  }, [globalFilter]);
+  // console.log(globalFilter.push({ row: 5, filter_id: 1, filter_name: "Colorgsvea" }));
+  const [showGlobalFilter, setShowGlobalFilter] = useState<boolean>(false);
+  const [openCreateNew, setOpenCreateNew] = useState<boolean>(false);
+
+  const { isLoading } = useCreateMasterFilter();
+
+  const handleCreateButtonClick = () => {
+    handleCreateFilter(newFilterName);
+    setNewFilterName("");
+    setOpenCreateNew(false);
+  };
+
+  const newFilterHandler = () => {
+    setShowGlobalFilter(true);
+  };
+  const closeCreateNew = () => {
+    setOpenCreateNew(false);
+  };
+
+  return (
+    <LargeModal
+      title="Filters"
+      open={show}
+      onClose={() => (handleShow(false), setShowGlobalFilter(false))}
+    >
+      <Grid container spacing={2}>
+        <AssociatedFilter
+          showOption
+          showAttachNew
+          filters={
+            data?.filter((item) => {
+              return globalFilter.includes(item.filter_id);
+            }) || []
+          }
+          // sendFilterId={getFilterId}
+          handleFilter={getFilterId}
+          newFilterHandler={newFilterHandler}
+          setAssociatedFiltr = {setAssociatedFiltr}
+        />
+
+        {showGlobalFilter && (
+          <GlobalAvailableFilter
+            filters={data}
+            // sendFilterId={getFilterId}
+            setGlobalFilte={setGlobalFilte}
+            handleFilter={getFilterId}
+            setCreateNew={() => setOpenCreateNew(true)}
+          />
+        )}
+
+        <CreateNewFilter
+          openCreateNew={openCreateNew}
+          closeCreateNew={closeCreateNew}
+          newFilterName={newFilterName}
+          setNewFilterName={setNewFilterName}
+          handleCreateButtonClick={handleCreateButtonClick}
+          isLoading={isLoading}
+        />
+      </Grid>
+    </LargeModal>
+  );
+};
+
+export default FilterModal;
+
+/*
 import React, { useState } from "react";
 import { Grid, TextField, Button, Modal, Box } from "@mui/material";
 import { LargeModal, FilterList } from "../../../components";
@@ -48,7 +152,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
             showOption
             showAttachNew
             filters={data}
-            sendFilterId={getFilterId}
+            handleFilter={getFilterId}
             newFilterHandler={newFilterHandler}
           />
         </Grid>
@@ -57,7 +161,7 @@ const FilterModal: React.FC<FilterModalProps> = ({
             <h3>Globally Available Filters</h3>
             <FilterList
               filters={data}
-              sendFilterId={getFilterId}
+              handleFilter={getFilterId}
               setCreateNew={() => setOpenCreateNew(true)}
             />
           </Grid>
@@ -116,3 +220,4 @@ const FilterModal: React.FC<FilterModalProps> = ({
 };
 
 export default FilterModal;
+*/

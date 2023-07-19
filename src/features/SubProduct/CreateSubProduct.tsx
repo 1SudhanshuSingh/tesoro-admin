@@ -6,8 +6,10 @@ import {
   TextField,
   Button,
   Grid,
+  Box,
 } from "@mui/material";
 import useCreateSubProduct from "../../hooks/Product/useCreateSubProduct";
+import { MultipleSelectChip } from "../../components";
 
 const CreateSubProduct: React.FC = () => {
   const createSubProductMutation = useCreateSubProduct();
@@ -54,10 +56,24 @@ const CreateSubProduct: React.FC = () => {
     <div>
       <h3>Create SubProduct</h3>
       <form onSubmit={handleSubmit}>
-        <FormControl>
-          <TextField label="ProdId" name="ProdId" required />
-          <TextField label="FilterValues" name="FilterValues" required />
-          <TextField label="Name" name="Name" required />
+        <FormControl
+          sx={{
+            // paddingRight: "10rem",
+            display: "flex",
+            flexWrap: "wrap",
+            flexGrow: 1,
+            gap: 1,
+            width: "40%",
+          }}
+        >
+          
+          <MultipleSelectChip
+            title="Product IDs"
+            data={["prod1", "prod2", "prod3"]} 
+          />
+          {/* <TextField label="ProdId" name="ProdId"  data={["prod1", "prod2", "prod3"]}/> */}
+          <TextField label="FilterValues" name="FilterValues" />
+          <TextField label="Name" name="Name" />
 
           <label htmlFor="SubProductImage">
             <Button variant="contained" component="span">
@@ -88,7 +104,7 @@ const CreateSubProduct: React.FC = () => {
             control={<Checkbox name="Active" color="primary" />}
             label="Active"
           />
-          <TextField label="FilterList" name="FilterList" required />
+          <TextField label="FilterList" name="FilterList" />
           <Button type="submit" variant="contained" color="primary">
             Create
           </Button>
@@ -169,10 +185,10 @@ export default CreateSubProduct;
 //       <h3>Create SubProduct</h3>
 //       <form onSubmit={handleSubmit}>
 //         <FormControl>
-//           <TextField label="ProdId" name="ProdId" required />
-//           <TextField label="FilterValues" name="FilterValues" required />
-//           <TextField label="Name" name="Name" required type="number" />
-//           <TextField label=" Detail" name="Detail" multiline required />
+//           <TextField label="ProdId" name="ProdId"  />
+//           <TextField label="FilterValues" name="FilterValues"  />
+//           <TextField label="Name" name="Name"  type="number" />
+//           <TextField label=" Detail" name="Detail" multiline  />
 //           {/* ---------------------------------- image
 //           --------------------------------- */}
 //           <label htmlFor="SubProductImage">
@@ -250,7 +266,7 @@ export default CreateSubProduct;
 //             control={<Checkbox name="Active" color="primary" />}
 //             label=" Active"
 //           />
-//           <TextField label="FilterValues" name="FilterValues" required />
+//           <TextField label="FilterValues" name="FilterValues"  />
 //           <Button type="submit" variant="contained" color="primary">
 //             Create
 //           </Button>
@@ -278,13 +294,13 @@ export default CreateSubProduct;
 // import useCreateSubProduct from "../../hooks/SubProduct/useCreateSubProduct";
 
 // const validationSchema = Yup.object().shape({
-//  ProdId: Yup.number().required("Category is required"),
-//   FilterValues: Yup.string().required("SubProduct name is required"),
-//   SubProductDetail: Yup.string().required("SubProduct Detail is required"),
-//   SubProductImage: Yup.mixed().required("SubProduct image is required"), //check
-//   Active: Yup.boolean().required("SubProduct active status is required"),
-//   SubProductPrice: Yup.number().required("SubProduct Price is required"),
-//   SubProductFilterValues: Yup.string().required("SubProduct filter list is required"), //check
+//  ProdId: Yup.number().("Category is "),
+//   FilterValues: Yup.string().("SubProduct name is "),
+//   SubProductDetail: Yup.string().("SubProduct Detail is "),
+//   SubProductImage: Yup.mixed().("SubProduct image is "), //check
+//   Active: Yup.boolean().("SubProduct active status is "),
+//   SubProductPrice: Yup.number().("SubProduct Price is "),
+//   SubProductFilterValues: Yup.string().("SubProduct filter list is "), //check
 // });
 
 // const CreateSubProduct: React.FC = () => {
