@@ -81,22 +81,22 @@ const CreateProduct: React.FC = () => {
   /* ------------------------------- for filters ------------------------------ */
   const [Chipdata, setChipdata] = useState<Filter[]>([]);
   const [AssociatedFilters, setAssociatedFilters] = useState<number[]>([]);
-  const setAssociatedFiltr = (id: number) => {
+
+  const setAssociatedFiltr = (ids: number[]) => {
     setAssociatedFilters((prevNumbers) => {
-      if (!AssociatedFilters.includes(id)) {
-        return [...prevNumbers, id];
-      }
-      return prevNumbers;
+      // Filter out duplicate IDs before adding them to the state
+      const newIds = ids.filter((id) => !prevNumbers.includes(id));
+      return [...prevNumbers, ...newIds];
     });
   };
 
   useEffect(() => {
     const dta =
-      filterData?.filter((item) => {
-        return AssociatedFilters.includes(item.filter_id);
-      }) || [];
+      filterData?.filter((item) =>
+        AssociatedFilters.includes(item.filter_id)
+      ) || [];
     setChipdata(dta);
-    console.log("dta", Chipdata);
+    console.log("dta", dta);
     console.log("manage filter chips", AssociatedFilters);
   }, [AssociatedFilters]);
 

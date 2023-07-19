@@ -13,7 +13,9 @@ interface GlobalAvailableFilterProps {
   filters: Filter[] | null;
   // data: Filter[] | null;
   setCreateNew?: () => void;
-  setGlobalFilte: (id: number) => void;
+  setGlobalFilte?: (ids: number[]) => void;
+  //...
+  
   handleFilter: (id: number) => void;
 }
 
