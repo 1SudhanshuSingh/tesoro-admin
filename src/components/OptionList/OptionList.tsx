@@ -15,9 +15,21 @@ interface Option {
 
 interface OptionListProps {
   options: Option[];
+  newOptionHandler?: () => void;
+  setCreateNew?: () => void;
+  showAttachNew?: boolean;
+  setAssociatedFiltrOption?: (id: number) => void;
+  setGlobalOptin?: (id: number) => void;
 }
 
-const OptionList: React.FC<OptionListProps> = ({ options }) => {
+const OptionList: React.FC<OptionListProps> = ({
+  options,
+  newOptionHandler,
+  showAttachNew,
+  setCreateNew,
+  setAssociatedFiltrOption,
+  setGlobalOptin,
+}) => {
   const [selectedOption, setSelectedOption] = useState<number[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -43,6 +55,17 @@ const OptionList: React.FC<OptionListProps> = ({ options }) => {
 
   const optionMatchesSearchTerm = (option: Option) => {
     return option.label.toLowerCase().includes(searchTerm.toLowerCase());
+  };
+
+  const handleSubmit = () => {
+    if (setGlobalOptin && selectedOption.length > 0) {
+      const [firstFilterId] = selectedOption; // Take the first filter id from the selectedOption array
+      setGlobalOptin(firstFilterId); // Pass the first filter id as a single number argument
+    }
+    if (setAssociatedFiltrOption && selectedOption.length > 0) {
+      const [firstFilterId] = selectedOption; // Take the first filter id from the selectedOption array
+      setAssociatedFiltrOption(firstFilterId); // Pass the first filter id as a single number argument
+    }
   };
 
   return (
@@ -79,12 +102,36 @@ const OptionList: React.FC<OptionListProps> = ({ options }) => {
           )}
         </Box>
       </div>
-      <Grid container gap={2}>
+      <Grid
+        container
+        gap={2}
+        sx={{
+          // position: "sticky",
+          // bottom: "2rem",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          background: "#fff", // Add a background color to prevent overlap with content
+        }}
+      >
         <Grid>
           <Button variant="outlined">Cancel</Button>
         </Grid>
         <Grid>
-          <Button variant="contained">Submit</Button>
+          <Button variant="contained" onClick={handleSubmit}>
+            Submit
+          </Button>
+        </Grid>
+        <Grid>
+          {showAttachNew ? (
+            <Button variant="contained" onClick={newOptionHandler}>
+              Attach New
+            </Button>
+          ) : (
+            <Button variant="contained" onClick={setCreateNew}>
+              Create New
+            </Button>
+          )}
         </Grid>
       </Grid>
     </>

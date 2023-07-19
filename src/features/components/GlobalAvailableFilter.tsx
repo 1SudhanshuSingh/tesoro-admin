@@ -33,7 +33,7 @@ const GlobalAvailableFilter: React.FC<GlobalAvailableFilterProps> = ({
         setGlobalFilte={setGlobalFilte}
         setCreateNew={setCreateNew}
       />
-      
+
       {/* <TextField
         label="Search"
         variant="outlined"

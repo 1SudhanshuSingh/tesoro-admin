@@ -6,14 +6,22 @@ interface GloballyAvailableOptionsProps {
     id: number;
     label: string;
   }>;
+  setCreateNew?: () => void;
+  setGlobalOptin?: (id: number) => void;
 }
 const GloballyAvailableOptions: React.FC<GloballyAvailableOptionsProps> = ({
   options,
+  setCreateNew,
+  setGlobalOptin,
 }) => {
   return (
     <Grid item sm={4}>
       <h3>Globally Available Options</h3>
-      <OptionList options={options} />
+      <OptionList
+        setGlobalOptin={setGlobalOptin}
+        setCreateNew={setCreateNew}
+        options={options}
+      />
     </Grid>
   );
 };
