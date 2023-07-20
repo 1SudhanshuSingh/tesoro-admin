@@ -14,7 +14,7 @@ export interface CategoryData {
 const createCategory = async (CategoryData: CategoryData): Promise<object> => {
   try {
     const response = await axios.post(
-      `${import.meta.env.VITE_API_BASE_URL as string}/Category/createCategory`,
+      `${import.meta.env.VITE_API_BASE_URL as string}/category/createCategory`,
       CategoryData
     );
     return response.data as object;

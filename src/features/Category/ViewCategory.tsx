@@ -1,51 +1,53 @@
 import * as React from "react";
-import { Box, Chip, Fab } from "@mui/material";
+import { Box, Fab } from "@mui/material";
 import { DataGrid, GridAddIcon, GridColDef } from "@mui/x-data-grid";
-import { dummyCategory } from "./DummyCategory";
+import { useCategories } from "../../hooks/Category/useGetAllCategory";
 import { useNavigate } from "react-router";
 
-interface RowData {
-  // id: number;
-  category_catID: number;
-  category_parentCategory: string;
-
-  category_active: string;
-  category_name: string;
-
-  // category_image: string;
-  // category_type: { id: number; value: string }[];
-  // category_sequence: number;
-  // category_filterList: { id: number; value: string }[];
-}
 
 const columns: GridColDef[] = [
-  // { field: "id", headerName: "category. ID", width: 100 },
   {
-    field: "category_catID",
-    headerName: "CatID ",
-   
+    field: "row",
+    headerName: "Row",
+    flex: 1,
+    headerAlign: "center",
+    align: "center",
+    width: 100,
   },
   {
-    field: "category_parentCategory",
-    headerName: "Parent Category",
-    
-  },
-  {
-    field: "category_name",
+    field: "cat_name",
     headerName: "Category Name",
-   
+    flex: 1,
+    headerAlign: "center",
+    align: "center",
+    width: 200,
   },
   {
-    field: "category_active",
-    headerName: "Active",
-    
+    field: "parent_categoryID",
+    headerName: "Parent Category",
+    flex: 1,
+    headerAlign: "center",
+    align: "center",
+    width: 200,
   },
 ];
 
-const rows: RowData[] = dummyCategory;
-
 const Viewcategory: React.FC = () => {
   const navigate = useNavigate();
+  const { data: response, isLoading, error } = useCategories();
+  const rows = response?.jsonResponse || [];
+  const rowsWithId = rows.map((row) => ({
+    ...row,
+    id: row.row.toString(),
+  }));
+  if (isLoading) {
+    return <div>Loading categories...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
   return (
     <div>
       <Box
@@ -70,21 +72,10 @@ const Viewcategory: React.FC = () => {
         }}
       >
         <DataGrid
-          rows={rows}
-          // columns={columns}
-          columns={columns.map((column) => ({
-            ...column,
-            flex: 1, // or any other flex value
-            headerAlign: "center",
-            align: "center",
-            width: 100,
-          }))}
-          initialState={{
-            pagination: {
-              paginationModel: { page: 0, pageSize: 5 },
-            },
-          }}
-          pageSizeOptions={[10, 20]}
+          rows={rowsWithId}
+          columns={columns}
+          loading={isLoading}
+          autoHeight
         />
       </Box>
     </div>

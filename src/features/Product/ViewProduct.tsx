@@ -1,3 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import * as React from "react";
 import { useState } from "react";
 import {
@@ -11,11 +17,15 @@ import {
   Button,
 } from "@mui/material";
 import { DataGrid, GridAddIcon, GridColDef } from "@mui/x-data-grid";
-import { dummyProd } from "./Dummy";
+import { useProducts } from "../../hooks/Product/useGetAllProdThruCatId";
 import { useNavigate } from "react-router";
+import {
+  Category,
+  useCategories,
+} from "../../hooks/Category/useGetAllCategory";
 
 interface RowData {
-  id: number;
+  id: string;
   prod_catID: number;
   prod_active: string;
   prod_name: string;
@@ -41,7 +51,7 @@ const columns: GridColDef[] = [
       const prodtype = params.value as { id: number; value: string }[];
       return (
         <div>
-          {prodtype.map((type, index) => (
+          {prodtype && prodtype.map((type, index) => (
             <Chip key={index} label={type.value} color="primary" />
           ))}
         </div>
@@ -50,20 +60,35 @@ const columns: GridColDef[] = [
   },
 ];
 
-const rows: RowData[] = dummyProd;
-
 const ViewProduct: React.FC = () => {
   const navigate = useNavigate();
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [staticRows] = useState(rows);
-  const [filteredRows, setFilteredRows] = useState(rows);
-  const handleFind = () => {
-    const filteredCategory = filteredRows.filter(
-      (row) => row?.id === parseInt(selectedCategory)
-    );
+  const { data: response, isLoading } = useCategories();
+  const categories = response?.jsonResponse || [];
 
-    console.log("cat", selectedCategory);
-    setFilteredRows(filteredCategory);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [filteredRows, setFilteredRows] = useState<RowData[]>([]);
+
+  const { data: prodData, isLoading: productsLoading } = useProducts(
+    selectedCategory ? Number(selectedCategory) : undefined,
+    0,
+    1000
+  );
+  const productsData = prodData?.jsonResponse || [];
+
+  const handleFind = () => {
+    if (selectedCategory === "") {
+      setFilteredRows([]);
+    } else {
+      const filteredProd = productsData?.filter(
+        (row: { prod_catID: number }) =>
+          row.prod_catID === Number(selectedCategory)
+      );
+      const rowsWithIds = filteredProd?.map((row: { prodId: number }) => ({
+        ...row,
+        id: row.row,
+      }));
+      setFilteredRows(rowsWithIds);
+    }
   };
   return (
     <div>
@@ -95,7 +120,6 @@ const ViewProduct: React.FC = () => {
           display="flex"
           justifyContent="space-between"
         >
-          {/* dropdown */}
           <FormControl fullWidth>
             <InputLabel id="category_Dropdown">Choose Category</InputLabel>
             <Select
@@ -104,15 +128,14 @@ const ViewProduct: React.FC = () => {
               value={selectedCategory}
               label="Choose Category"
               fullWidth
-              onChange={(event) => {
-                setSelectedCategory(event.target.value);
-                setFilteredRows(staticRows);
-              }}
+              onChange={(event) => setSelectedCategory(event.target.value)}
             >
-              <MenuItem value="">All</MenuItem>
-              <MenuItem value="Category1">Category 1</MenuItem>
-              <MenuItem value="Category2">Category 2</MenuItem>
-              <MenuItem value="Category3">Category 3</MenuItem>
+              {categories &&
+                categories.map((category: Category) => (
+                  <MenuItem key={category.row} value={category.row.toString()}>
+                    {category.cat_name}
+                  </MenuItem>
+                ))}
             </Select>
           </FormControl>
           <Button variant="contained" color="primary" onClick={handleFind}>
@@ -120,24 +143,17 @@ const ViewProduct: React.FC = () => {
           </Button>
         </Box>
         <DataGrid
-          // rows={filteredRows}
-          rows={filteredRows.map((row) => ({
-            ...row,
-            // or any other flex value
-          }))}
+          rows={filteredRows}
           columns={columns.map((column) => ({
             ...column,
-            flex: 1, // or any other flex value
+            flex: 1,
             align: "center",
             headerAlign: "center",
             width: 100,
           }))}
-          initialState={{
-            pagination: {
-              paginationModel: { page: 0, pageSize: 5 },
-            },
-          }}
-          pageSizeOptions={[10, 20]}
+          loading={isLoading || productsLoading}
+          autoHeight
+          pageSize={10}
         />
       </Box>
     </div>
