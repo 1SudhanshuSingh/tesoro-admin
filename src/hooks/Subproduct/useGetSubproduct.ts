@@ -48,7 +48,7 @@ async function fetchSubProducts(
   const response = await axios.post<ApiResponse>(
     `${
       import.meta.env.VITE_API_BASE_URL as string
-    }/subProduct/getAllSubProdThruProdId`,
+    }/subproduct/getAllSubProdThruProdId`,
     queryParams
   );
 

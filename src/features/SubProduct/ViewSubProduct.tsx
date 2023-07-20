@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import * as React from "react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Box,
   Chip,
@@ -10,7 +9,6 @@ import {
   Select,
   MenuItem,
   InputLabel,
-  Button,
 } from "@mui/material";
 import { DataGrid, GridAddIcon, GridColDef } from "@mui/x-data-grid";
 import { useProducts } from "../../hooks/Product/useGetAllProdThruCatId";
@@ -102,7 +100,7 @@ const ViewProduct: React.FC = () => {
           padding: "1rem",
         }}
       >
-        <h3>All Products</h3>
+        <h3>All Subproducts</h3>
         <Fab
           color="primary"
           aria-label="add"
@@ -131,7 +129,7 @@ const ViewProduct: React.FC = () => {
               value={selectedCategory}
               label="Choose Category"
               fullWidth
-              onChange={(event) => setSelectedCategory(event.target.value as string)}
+              onChange={(event) => setSelectedCategory(event.target.value)}
             >
               {categories.map((category) => (
                 <MenuItem key={category.row} value={category.row.toString()}>

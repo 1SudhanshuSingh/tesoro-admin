@@ -1,14 +1,6 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
-  Chip,
   Fab,
   FormControl,
   Select,
@@ -51,9 +43,10 @@ const columns: GridColDef[] = [
       const prodtype = params.value as { id: number; value: string }[];
       return (
         <div>
-          {prodtype && prodtype.map((type, index) => (
-            <Chip key={index} label={type.value} color="primary" />
-          ))}
+          {prodtype &&
+            prodtype.map((type, index) => (
+              <Chip key={index} label={type.value} color="primary" />
+            ))}
         </div>
       );
     },
@@ -75,7 +68,7 @@ const ViewProduct: React.FC = () => {
   );
   const productsData = prodData?.jsonResponse || [];
 
-  const handleFind = () => {
+  useEffect(() => {
     if (selectedCategory === "") {
       setFilteredRows([]);
     } else {
@@ -87,9 +80,10 @@ const ViewProduct: React.FC = () => {
         ...row,
         id: row.row,
       }));
-      setFilteredRows(rowsWithIds);
+      setFilteredRows(rowsWithIds || []);
     }
-  };
+  }, [selectedCategory, productsData]);
+
   return (
     <div>
       <Box
@@ -130,17 +124,13 @@ const ViewProduct: React.FC = () => {
               fullWidth
               onChange={(event) => setSelectedCategory(event.target.value)}
             >
-              {categories &&
-                categories.map((category: Category) => (
-                  <MenuItem key={category.row} value={category.row.toString()}>
-                    {category.cat_name}
-                  </MenuItem>
-                ))}
+              {categories.map((category: Category) => (
+                <MenuItem key={category.row} value={category.row.toString()}>
+                  {category.cat_name}
+                </MenuItem>
+              ))}
             </Select>
           </FormControl>
-          <Button variant="contained" color="primary" onClick={handleFind}>
-            Find
-          </Button>
         </Box>
         <DataGrid
           rows={filteredRows}
@@ -153,7 +143,6 @@ const ViewProduct: React.FC = () => {
           }))}
           loading={isLoading || productsLoading}
           autoHeight
-          pageSize={10}
         />
       </Box>
     </div>

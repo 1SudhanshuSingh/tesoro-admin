@@ -10,12 +10,14 @@ import {
   ViewItem,
   CreateCategory,
   ViewCategory,
+  AuthPage,
 } from "./features";
 
 const RouterConfig: React.FC = () => {
   return (
     <Routes>
-      <Route path="/" element={<Dashboard />} />
+      <Route path="/" element={<AuthPage />} />
+      <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/category" element={<ViewCategory />} />
       <Route path="/category/createCategory" element={<CreateCategory />} />
       <Route path="/product" element={<ViewProduct />} />

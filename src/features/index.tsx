@@ -8,6 +8,7 @@ import ViewItem from "./Item/ViewItem";
 import Dashboard from "./Dashboard/Dashboard";
 import ViewCategory from "./Category/ViewCategory";
 import CreateCategory from "./Category/CreateCategory";
+import AuthPage from "./Auth/Auth";
 
 const WithHOCDashboard = SideHeader(Dashboard);
 const WithHOCViewCategory = SideHeader(ViewCategory);
@@ -20,6 +21,7 @@ const WithHOCViewItem = SideHeader(ViewItem);
 const WithHOCCreateItem = SideHeader(CreateItem);
 
 export {
+  AuthPage,
   WithHOCViewCategory as ViewCategory,
   WithHOCCreateCategory as CreateCategory,
   WithHOCViewProduct as ViewProduct,

@@ -1,15 +1,18 @@
-import React, { useState } from "react";
+import React from "react";
 import { List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
 import { Link } from "react-router-dom";
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import SettingsIcon from "@mui/icons-material/Settings";
+import CategoryIcon from "@mui/icons-material/Category";
+import ProductIcon from "@mui/icons-material/ShoppingBasket";
+import SubProductIcon from "@mui/icons-material/Storage";
+import ItemIcon from "@mui/icons-material/LocalMall";
 import classes from "./Drawer.module.scss";
 
 const Drawer: React.FC = () => {
   return (
     <div className={classes.drawerContainer}>
       <List>
-        <ListItem component={Link} to="/">
+        <ListItem component={Link} to="/dashboard">
           <ListItemIcon>
             <DashboardIcon />
           </ListItemIcon>
@@ -17,26 +20,26 @@ const Drawer: React.FC = () => {
         </ListItem>
         <ListItem component={Link} to="/category">
           <ListItemIcon>
-            <SettingsIcon />
+            <CategoryIcon />
           </ListItemIcon>
           <ListItemText primary="Category" />
         </ListItem>
 
         <ListItem component={Link} to="/product">
           <ListItemIcon>
-            <SettingsIcon />
+            <ProductIcon />
           </ListItemIcon>
           <ListItemText primary="Product" />
         </ListItem>
         <ListItem component={Link} to="/subproduct">
           <ListItemIcon>
-            <SettingsIcon />
+            <SubProductIcon />
           </ListItemIcon>
           <ListItemText primary="Sub Product" />
         </ListItem>
         <ListItem component={Link} to="/item">
           <ListItemIcon>
-            <SettingsIcon />
+            <ItemIcon />
           </ListItemIcon>
           <ListItemText primary="Item" />
         </ListItem>
