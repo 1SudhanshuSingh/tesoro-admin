@@ -13,7 +13,9 @@ interface GlobalAvailableFilterProps {
   filters: Filter[] | null;
   // data: Filter[] | null;
   setCreateNew?: () => void;
-  setGlobalFilte: (id: number) => void;
+  setGlobalFilte?: (ids: number[]) => void;
+  //...
+  
   handleFilter: (id: number) => void;
 }
 
@@ -33,7 +35,7 @@ const GlobalAvailableFilter: React.FC<GlobalAvailableFilterProps> = ({
         setGlobalFilte={setGlobalFilte}
         setCreateNew={setCreateNew}
       />
-      
+
       {/* <TextField
         label="Search"
         variant="outlined"

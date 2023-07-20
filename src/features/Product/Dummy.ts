@@ -158,7 +158,44 @@ export const OptionData = [
     id: 2,
     label: "M",
   },
+  {
+    id: 3,
+    label: "S",
+  },
+  {
+    id: 4,
+    label: "L",
+  },
+  {
+    id: 5,
+    label: "XXL",
+  },
+  {
+    id: 6,
+    label: "XS",
+  },
+  {
+    id: 7,
+    label: "XXXL",
+  },
+  {
+    id: 8,
+    label: "XXS",
+  },
+  {
+    id: 9,
+    label: "M/L",
+  },
+  {
+    id: 10,
+    label: "L/XL",
+  },
+  {
+    id: 11,
+    label: "Free Size",
+  },
 ];
+
 export const dummyProd = [
   /*
   {

@@ -17,13 +17,22 @@ import OptionModal from "./components/OptionModal";
 import useFiltersAvailableForProdId, {
   Filter,
 } from "../../hooks/Filter/useFiltersAvailableForProdId";
+// import useFiltersAvailableForProdId, {
+//   Option,
+// } from "../../hooks/Filter/useFiltersAvailableForProdId";
 import useCreateMasterFilter from "../../hooks/Filter/useCreateMasterFilter";
+import useCreateMasterOption from "../../hooks/Filter/useCreateMasterOption";
 
 const CreateProduct: React.FC = () => {
   const [prodId, setProdId] = useState<number>(0);
   const { isLoading, filterData, refetch } =
     useFiltersAvailableForProdId(prodId);
   const { createMasterFilter, data: createdDataRes } = useCreateMasterFilter();
+  //options
+  //  const {  OptionData, } =
+  //    useFiltersAvailableForProdId(prodId);
+  const { createMasterOption } = useCreateMasterOption();
+
   const [activeOption, setActiveOption] = useState<string>("");
   const [showAttachNewFilter, setShowAttachNewFilter] =
     useState<boolean>(false);
@@ -53,27 +62,68 @@ const CreateProduct: React.FC = () => {
     });
     await refetch();
   };
+  // const handleCreateOption = async (OptionName: string) => {
+  //   await createMasterOption({ //change api here
+  //     OptionName,
+  //     OptionOptions: "[]",
+  //   });
+  //   await refetch();
+  // };
+  const handleCreateOption = async (OptionName: string) => {
+    await createMasterOption({
+      //change api here
+      OptionName,
+      OptionOptions: "[]",
+    });
+    await refetch();
+  };
 
+  /* ------------------------------- for filters ------------------------------ */
+  const [Chipdata, setChipdata] = useState<Filter[]>([]);
   const [AssociatedFilters, setAssociatedFilters] = useState<number[]>([]);
-  const setAssociatedFiltr = (id: number) => {
+
+  const setAssociatedFiltr = (ids: number[]) => {
     setAssociatedFilters((prevNumbers) => {
-      if (!AssociatedFilters.includes(id)) {
+      // Filter out duplicate IDs before adding them to the state
+      const newIds = ids.filter((id) => !prevNumbers.includes(id));
+      return [...prevNumbers, ...newIds];
+    });
+  };
+
+  useEffect(() => {
+    const dta =
+      filterData?.filter((item) =>
+        AssociatedFilters.includes(item.filter_id)
+      ) || [];
+    setChipdata(dta);
+    console.log("dta", dta);
+    console.log("manage filter chips", AssociatedFilters);
+  }, [AssociatedFilters]);
+
+  /* ------------------------------ FilterOPtion ------------------------------ */
+  const [OptionChipdata, setOptionChipdata] = useState<Filter[]>([]);
+  const [AssociatedFilterOptions, setAssociatedFilterOptions] = useState<
+    number[]
+  >([]);
+  const setAssociatedFiltrOption = (id: number) => {
+    setAssociatedFilterOptions((prevNumbers) => {
+      if (!AssociatedFilterOptions.includes(id)) {
         return [...prevNumbers, id];
       }
       return prevNumbers;
     });
   };
-  const [Chipdata, setChipdata] = useState<Filter[]>([]);
+
   useEffect(() => {
     const dta =
       filterData?.filter((item) => {
-        return AssociatedFilters.includes(item.filter_id);
+        return AssociatedFilterOptions.includes(item.filter_id);
       }) || [];
-    setChipdata(dta);
-    console.log("dta", Chipdata);
-    console.log("manage filter chips", AssociatedFilters);
-  }, [AssociatedFilters]);
-
+    setOptionChipdata(dta);
+    console.log("dta", OptionChipdata);
+    console.log("manage filter chips", AssociatedFilterOptions);
+  }, [AssociatedFilterOptions]);
+  /* filter options end  */
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log(e.target);
@@ -135,9 +185,12 @@ const CreateProduct: React.FC = () => {
               <Grid padding={1} marginTop={2}>
                 <TextField label="Product Sequence" fullWidth />
               </Grid>
+              {/* filters */}
               <Grid container marginTop={2}>
-                <ChipsArray title="Manage Filter" data={Chipdata} />
+                <ChipsArray title="Filters" data={Chipdata} />
+                {/* <ChipsArray title="Filter Options" data={OptionChipdata} /> */}
               </Grid>
+
               <Grid container marginY={2}>
                 <Button
                   variant="outlined"
@@ -146,6 +199,8 @@ const CreateProduct: React.FC = () => {
                   Manage Filters
                 </Button>
               </Grid>
+
+              {/* filterend */}
               <Grid container marginY={2}>
                 <Button type="submit" variant="contained" color="primary">
                   Create
@@ -166,9 +221,11 @@ const CreateProduct: React.FC = () => {
           <OptionModal
             data={OptionData}
             // show={true}
-           show={showAttachOption}
+            show={showAttachOption}
             handleShow={setShowAttachOption}
             handleBackToFilter={handleBackToFilter}
+            handleCreateOption={handleCreateOption}
+            setAssociatedFiltrOption={setAssociatedFiltrOption}
           />
         </FormControl>
       </form>

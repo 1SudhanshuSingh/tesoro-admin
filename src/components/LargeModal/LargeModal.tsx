@@ -33,11 +33,13 @@ const LargeModal: React.FC<LargeModalProps> = ({
           sx={{
             position: "absolute",
             top: "0",
+            // position:"sticky",
+            bottom: 0,
             width: "90%",
             margin: "0 5%",
             bgcolor: "background.paper",
             boxShadow: 24,
-            height: "100vh",
+            // height: "max-content",
             p: "1rem",
           }}
         >
