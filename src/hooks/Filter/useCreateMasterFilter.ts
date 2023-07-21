@@ -17,7 +17,6 @@ const useCreateMasterFilter = (): {
     AxiosResponse<Filter, unknown>,
     CreateMasterFilterRequest
   >;
-  // data: Filter | null;
   data: AxiosResponse<Filter, unknown> | null;
   isLoading: boolean;
 } => {

@@ -48,7 +48,6 @@ const ViewItem: React.FC = () => {
       setSubProducts(subProductsOptions);
     }
   }, [allSubProductsData]);
-  console.log(items);
   return (
     <div>
       <Box

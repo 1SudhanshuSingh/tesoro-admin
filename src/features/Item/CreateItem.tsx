@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Checkbox,
@@ -8,33 +8,53 @@ import {
   Box,
   Grid,
   InputAdornment,
+  Alert,
+  Snackbar,
+  Autocomplete,
+  Chip,
 } from "@mui/material";
 import AddPhotoAlternateRoundedIcon from "@mui/icons-material/AddPhotoAlternateRounded";
 import CurrencyRupeeRoundedIcon from "@mui/icons-material/CurrencyRupeeRounded";
 import useCreateItem from "../../hooks/Product/useCreateItem";
+import { useGetAllSubproduct } from "../../hooks/Subproduct/useGetAllSubProduct";
+import { MenuItem } from "@material-ui/core";
+import { uuid } from "short-uuid";
+import { useNavigate } from "react-router-dom";
+import useGetSubProductById from "../../hooks/Subproduct/useGetSubProductById";
 
 const CreateItem: React.FC = () => {
   const createItemMutation = useCreateItem();
+  const navigate = useNavigate();
+  const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
   const [imagePreviews, setImagePreviews] = useState<File[]>([]);
-  // const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [isItemActive, setIsItemActive] = useState<boolean>(true);
+  const [subProdFilterValues, setSubProdFilterValues] = useState([]);
+  const [subProdFilterList, setSubProdFilterList] = useState([]);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [selectedSubProduct, setSelectedSubProduct] = useState<string>("");
+  const { allSubProductsData, isLoading: subproductLoading } =
+    useGetAllSubproduct(0);
+  const { data: subProdDataById } = useGetSubProductById(
+    Number(selectedSubProduct)
+  );
+  const generateItemSku = (): string => {
+    const encodedUUID = uuid();
+    return `TS${encodedUUID}`;
+  };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     const formData = new FormData(e.currentTarget);
     const ItemData = {
       subProdId: Number(formData.get("subProdId")),
-      ItemSku: formData.get("ItemSku") as string,
+      ItemSku: generateItemSku(),
       ItemQty: Number(formData.get("ItemQty")),
-      ItemActive: Boolean(formData.get("ItemActive")),
+      ItemActive: isItemActive ? "A" : "F",
       ItemDetail: formData.get("ItemDetail") as string,
-      // ItemImage: formData.get("ItemImage") as unknown as FileList,
       ItemImage: imageFiles,
       ItemPrice: Number(formData.get("ItemPrice")),
-      ItemFilterValues: (formData.get("ItemFilterValues") as string).split(","),
+      ItemFilterValues: subProdFilterList,
     };
-    console.log("data :", ItemData);
     createItemMutation.mutate(ItemData);
   };
 
@@ -43,35 +63,72 @@ const CreateItem: React.FC = () => {
 
     if (files && files.length > 0) {
       const selectedFiles: File[] = Array.from(files);
-      console.log("selectedFiles:", selectedFiles);
       setImageFiles(selectedFiles);
       setImagePreviews(selectedFiles);
     } else {
       setImagePreviews([]);
     }
   };
+  useEffect(() => {
+    if (createItemMutation.isSuccess) {
+      setOpenSnackbar(true);
+    }
+  }, [createItemMutation.isSuccess]);
+
+  const handleSnackbarClose = () => {
+    setOpenSnackbar(false);
+    navigate("/item");
+  };
+
+  const handleDeleteFilter = (index: number) => {
+    const updatedFilters = [...subProdFilterList];
+    updatedFilters.splice(index, 1);
+    setSubProdFilterList(updatedFilters);
+  };
+
+  const handleDeleteFilterValue = (index: number) => {
+    const updatedFilterValues = [...subProdFilterValues];
+    updatedFilterValues.splice(index, 1);
+    setSubProdFilterValues(updatedFilterValues);
+  };
 
   return (
     <div>
       <h3>Create Item</h3>
       <form onSubmit={handleSubmit}>
-        <FormControl
-          style={{ display: "flex", gap: "10px", margin: "20px" }}
-          focused
-        >
+        <FormControl style={{ margin: "20px" }} focused>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} sm={4}>
               <TextField
-                label="Sub ProdId"
+                label="Choose Subproduct"
                 name="subProdId"
                 type="number"
                 fullWidth
+                select
+                value={selectedSubProduct}
+                onChange={(event) => setSelectedSubProduct(event.target.value)}
+              >
+                {subproductLoading ? (
+                  <MenuItem value="">Loading...</MenuItem>
+                ) : (
+                  allSubProductsData?.map((subprod) => (
+                    <MenuItem key={subprod.subprodID} value={subprod.subprodID}>
+                      {subprod.subprod_Name}
+                    </MenuItem>
+                  ))
+                )}
+              </TextField>
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <TextField
+                label="ItemSku"
+                name="ItemSku"
+                disabled
+                value={generateItemSku()}
+                fullWidth
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField label="ItemSku" name="ItemSku" fullWidth />
-            </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} sm={4}>
               <TextField
                 label="ItemQty"
                 name="ItemQty"
@@ -79,12 +136,15 @@ const CreateItem: React.FC = () => {
                 fullWidth
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12}>
               <TextField
                 label="Item Detail"
                 name="ItemDetail"
                 multiline
+                rows={6}
                 fullWidth
+                variant="outlined"
+                placeholder="Enter item details..."
               />
             </Grid>
             <Grid item xs={12}>
@@ -132,8 +192,15 @@ const CreateItem: React.FC = () => {
             </Grid>
             <Grid item xs={12} sm={6}>
               <FormControlLabel
-                control={<Checkbox name="ItemActive" color="primary" />}
-                label="Item Active"
+                control={
+                  <Checkbox
+                    name="ItemActive"
+                    color="primary"
+                    checked={isItemActive}
+                    onChange={(e) => setIsItemActive(e.target.checked)}
+                  />
+                }
+                label={isItemActive ? "Active" : "Inactive"}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -151,15 +218,79 @@ const CreateItem: React.FC = () => {
                 }}
               />
             </Grid>
-            <Grid item xs={12}>
-              <TextField label="Item Filter List" name="ItemFilterValues" />
+            <Grid item xs={6}>
+              {subProdDataById && (
+                <Autocomplete
+                  multiple
+                  options={subProdDataById.subprod_filterList}
+                  getOptionLabel={(option) => option.filter_name}
+                  value={subProdFilterList}
+                  onChange={(event, newValue) => setSubProdFilterList(newValue)}
+                  renderTags={(value, getTagProps) =>
+                    value.map((option, index) => (
+                      <Chip
+                        variant="outlined"
+                        label={option.filter_name}
+                        {...getTagProps({ index })}
+                        onDelete={() => handleDeleteFilter(index)}
+                      />
+                    ))
+                  }
+                  renderInput={(params) => (
+                    <TextField {...params} label="Item Filter List" />
+                  )}
+                />
+              )}
+            </Grid>
+            <Grid item xs={6}>
+              {subProdDataById && (
+                <Autocomplete
+                  multiple
+                  options={subProdDataById.subprod_filterValues}
+                  getOptionLabel={(option) => option.filter_optionName}
+                  value={subProdFilterValues}
+                  onChange={(event, newValue) =>
+                    setSubProdFilterValues(newValue)
+                  }
+                  renderTags={(value, getTagProps) =>
+                    value.map((option, index) => (
+                      <Chip
+                        variant="outlined"
+                        label={option.filter_optionName}
+                        {...getTagProps({ index })}
+                        onDelete={() => handleDeleteFilterValue(index)}
+                      />
+                    ))
+                  }
+                  renderInput={(params) => (
+                    <TextField {...params} label="Item Filter Values" />
+                  )}
+                />
+              )}
             </Grid>
           </Grid>
-          <Button type="submit" variant="contained" color="primary">
-            Create
-          </Button>
+          <Grid
+            item
+            xs={12}
+            marginTop={2}
+            display="flex"
+            justifyContent="flex-end"
+          >
+            <Button type="submit" variant="contained" color="primary">
+              Create
+            </Button>
+          </Grid>
         </FormControl>
       </form>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={5000}
+        onClose={handleSnackbarClose}
+      >
+        <Alert onClose={handleSnackbarClose} severity="success">
+          Item has been created!
+        </Alert>
+      </Snackbar>
     </div>
   );
 };
