@@ -28,7 +28,7 @@ const CreateItem: React.FC = () => {
   const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
   const [imagePreviews, setImagePreviews] = useState<File[]>([]);
   const [isItemActive, setIsItemActive] = useState<boolean>(true);
-  const [subProdFilterValues, setSubProdFilterValues] = useState([]);
+  const [subProdFilterValues, setSubProdFilterValues] = useState<any>([]);
   const [subProdFilterList, setSubProdFilterList] = useState([]);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [selectedSubProduct, setSelectedSubProduct] = useState<string>("");
@@ -53,7 +53,8 @@ const CreateItem: React.FC = () => {
       ItemDetail: formData.get("ItemDetail") as string,
       ItemImage: imageFiles,
       ItemPrice: Number(formData.get("ItemPrice")),
-      ItemFilterValues: subProdFilterList,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      ItemFilterValues: subProdFilterList.map(item => Number(item?.filter_id)),
     };
     createItemMutation.mutate(ItemData);
   };
@@ -91,7 +92,8 @@ const CreateItem: React.FC = () => {
     updatedFilterValues.splice(index, 1);
     setSubProdFilterValues(updatedFilterValues);
   };
-
+  console.log(subProdFilterList);
+  
   return (
     <div>
       <h3>Create Item</h3>
