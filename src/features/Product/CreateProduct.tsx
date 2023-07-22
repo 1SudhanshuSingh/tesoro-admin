@@ -88,18 +88,6 @@ const CreateProduct: React.FC = () => {
     setfilterOptionDataState(OptionData);
   }, [filterData]);
 
-  // const prodOptionList = OptionData || [];
-
-  // const [OptionFilteredList, setOptionFilteredList] = useState<
-  //   number[] | number
-  // >([]);
-  // const optionFilteredListFunc = (ids: number[] | number) => {
-  //   setOptionFilteredList(ids);
-  // };
-
-  //options
-  //  const {  OptionData, } =
-  //    useFiltersAvailableForProdId(prodId);
   const { createFilterOption } = useCreateFilterOption();
 
   const [activeOption, setActiveOption] = useState<string>("");
@@ -142,7 +130,28 @@ const CreateProduct: React.FC = () => {
     await filterOptionsRefetch();
     console.log("succes form option");
   };
+  /* ------------------------------------ x ----------------------------------- */
+  //filter passed to associtiate from global
+  const [globalFilter, setGlobalFilter] = useState<number[]>([]);
+  const [selectedGlobalFilter, SetselectedGlobalFilter] = useState<Filter[]>(
+    []
+  );
+  console.log("filter passed to associtiate", globalFilter);
+  const setGlobalFilte = (ids: number[]) => {
+    setGlobalFilter((prevNumbers) => {
+      const uniqueIds = new Set([...prevNumbers, ...ids]);
+      return Array.from(uniqueIds);
+    });
+  };
 
+  useEffect(() => {
+    SetselectedGlobalFilter(
+      () =>
+        filterDataState?.filter((item) => {
+          return globalFilter.includes(item.filter_id);
+        }) || []
+    );
+  }, [globalFilter]);
   /* ------------------------------- for filters ------------------------------ */
   const [Chipdata, setChipdata] = useState<Filter[]>([]);
   const [AssociatedFilters, setAssociatedFilters] = useState<number[]>([]);
@@ -200,25 +209,9 @@ const CreateProduct: React.FC = () => {
     );
     if (flag) RefetchUpdate();
   }, [filterId, filterName, OptionChipdata]);
-  // useEffect(() => {
-  //   console.log("update option", filterId, filterName, OptionChipdata);
-  //   if (filterId && filterName && OptionChipdata && OptionChipdata.length > 0) {
-  //     const filterOptions = OptionChipdata?.map((option) => {
-  //       return option?.filter_optionID;
-  //     });
 
-  //     const {} = useUpdateMasterFilterOrOption(
-  // filterId,
-  // filterName,
-  // filterOptions
-  //     );
-  //   }
-  // }, [OptionChipdata]);
-
-  /* filter options end  */
-
-  const createProductMutation = useCreateProduct();
   /* ------------------------------ handleSubmit ------------------------------ */
+  const createProductMutation = useCreateProduct();
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -232,7 +225,7 @@ const CreateProduct: React.FC = () => {
       productImage: selectedImage || null,
       productActive: Boolean(formData.get("Active")),
       productSequence: Number(formData.get("ProductSequence")),
-      // productFilterList: (formData.get("FilterList") as string).split(","),
+
       productFilterList: AssociatedFilters,
     };
 
@@ -262,11 +255,6 @@ const CreateProduct: React.FC = () => {
   const catIdListFunc = (ids: number[] | number) => {
     setcatIdList(ids);
   };
-
-  // useEffect(() => {
-  //   // This will log the updated value of catIdList after every change
-  //   console.log("catogory id list from useEffect", catIdList);
-  // }, [catIdList]);
 
   return (
     <>
@@ -399,7 +387,9 @@ const CreateProduct: React.FC = () => {
             getFilterId={getFilterId}
             // eslint-disable-next-line @typescript-eslint/no-misused-promises
             handleCreateFilter={handleCreateFilter}
+            setGlobalFilte={setGlobalFilte}
             setAssociatedFiltr={setAssociatedFiltr}
+            selectedGlobalFilter={selectedGlobalFilter}
           />
           <OptionModal
             data={filterOptionDataState}
@@ -409,6 +399,10 @@ const CreateProduct: React.FC = () => {
             handleBackToFilter={handleBackToFilter}
             handleCreateOption={handleCreateOption}
             setAssociatedFiltrOption={setAssociatedFiltrOption}
+            setAssociatedFiltr={setAssociatedFiltr}
+            // setGlobalFilte={setGlobalFilte}
+            selectedGlobalFilter={selectedGlobalFilter}
+            getFilterId={getFilterId}
           />
         </FormControl>
       </form>

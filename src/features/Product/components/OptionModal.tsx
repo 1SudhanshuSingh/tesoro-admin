@@ -4,15 +4,19 @@ import AssociatedOptions from "../../components/AssociateOptions";
 import GloballyAvailableOptions from "../../components/GlobalOptions";
 import CreateNewOptions from "../../components/CreateNewOption";
 import React, { useState, useEffect } from "react";
-
+import AssociatedFilter from "../../components/AssociatedFilter";
+import { Filter } from "../../../hooks/Filter/useFiltersAvailableForProdId";
 import { Option } from "../../../hooks/Filter/useallFilterOptionsAvailableForFilterID";
 interface OptionalModalProps {
+  getFilterId: (id: number, name: string) => void;
+  selectedGlobalFilter: Filter[] | null;
   show: boolean;
   data: Option[] | null;
   handleShow: (show: boolean) => void;
   handleBackToFilter: (show: boolean) => void;
   handleCreateOption: (OptionName: string) => void;
   setAssociatedFiltrOption?: (ids: number[]) => void;
+  setAssociatedFiltr?: (ids: number[]) => void;
 }
 
 const OptionModal: React.FC<OptionalModalProps> = ({
@@ -22,6 +26,9 @@ const OptionModal: React.FC<OptionalModalProps> = ({
   handleBackToFilter,
   handleCreateOption,
   setAssociatedFiltrOption,
+  setAssociatedFiltr,
+  selectedGlobalFilter,
+  getFilterId,
 }) => {
   const [newOptionName, setNewOptionName] = useState("");
   //filter associtaed options
@@ -73,12 +80,18 @@ const OptionModal: React.FC<OptionalModalProps> = ({
           justifyContent: "space-between",
           padding: "2rem",
           marginTop: 3,
-
-          // alignItems: "center",
         }}
       >
+        <AssociatedFilter
+          showOption
+          showAttachNew
+          filters={selectedGlobalFilter}
+          // sendFilterId={getFilterId}
+          handleFilter={getFilterId}
+          setAssociatedFiltr={setAssociatedFiltr}
+        />
+
         <AssociatedOptions
-          // options={data}
           options={
             data?.filter((item) => {
               return globalOption.includes(item.filter_optionID);

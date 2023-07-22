@@ -17,7 +17,7 @@ interface GlobalAvailableFilterProps {
   setGlobalFilte?: (ids: number[]) => void;
   //...
 
-  handleFilter:   (id: number,name:string) => void;
+  handleFilter: (id: number, name: string) => void;
 }
 
 const GlobalAvailableFilter: React.FC<GlobalAvailableFilterProps> = ({
