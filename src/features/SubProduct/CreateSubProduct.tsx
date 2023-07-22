@@ -1,26 +1,46 @@
 import React, { useState } from "react";
 import {
-  Checkbox,
-  FormControlLabel,
   FormControl,
   TextField,
   Button,
   Grid,
-  Box,
+  InputLabel,
+  MenuItem,
+  Select,
+  Chip,
+  Card,
+  CardMedia,
+  Typography,
 } from "@mui/material";
 import useCreateSubProduct from "../../hooks/Product/useCreateSubProduct";
-import { MultipleSelectChip } from "../../components";
+import { useCategories } from "../../hooks/Category/useGetAllCategory";
+import { useProducts } from "../../hooks/Product/useGetAllProdThruCatId";
+import useFiltersAvailableForProdId from "../../hooks/Filter/useFiltersAvailableForProdId";
 
 const CreateSubProduct: React.FC = () => {
   const createSubProductMutation = useCreateSubProduct();
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<number[]>([]);
+  const [itemStatus, setItemStatus] = useState<string>("");
+
+  const { filterData } = useFiltersAvailableForProdId(0);
+  console.log(filterData);
+  const { data: response } = useCategories();
+  const categories = response?.jsonResponse;
+
+  const { data: prodData } = useProducts(
+    selectedCategory ? parseInt(selectedCategory) : undefined,
+    0,
+    1000
+  );
+  const productsData = prodData?.jsonResponse || [];
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const formData = new FormData(e.currentTarget);
-    // formData.append("SubProductImage", selectedImage);
 
     const SubProductData = {
       ProdID: (formData.get("ProdId") as string).split(","),
@@ -36,435 +56,164 @@ const CreateSubProduct: React.FC = () => {
   };
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.currentTarget.files;
-
+    const files = event.target.files;
     if (files && files.length > 0) {
-      const selectedFile = files[0];
-      setSelectedImage(selectedFile);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(selectedFile);
+      const previewUrls: string[] = [];
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const result = reader.result;
+          if (typeof result === "string") {
+            previewUrls.push(result);
+            if (previewUrls.length === files.length) {
+              setImagePreviews(previewUrls);
+            }
+          }
+        };
+        reader.readAsDataURL(file);
+      }
     } else {
-      setSelectedImage(null);
-      setImagePreview(null);
+      setImagePreviews([]);
     }
   };
 
+  const handleProductChange = (
+    event: React.ChangeEvent<{ value: unknown }>
+  ) => {
+    const { value } = event.target;
+    if (Array.isArray(value)) {
+      setSelectedProduct(value as number[]);
+    }
+  };
+  const getProductNameById = (productId: number): string => {
+    return (
+      productsData.find((product) => product.prodID === productId)?.prod_name ||
+      ""
+    );
+  };
   return (
     <div>
       <h3>Create SubProduct</h3>
       <form onSubmit={handleSubmit}>
-        <FormControl
-          sx={{
-            // paddingRight: "10rem",
-            display: "flex",
-            flexWrap: "wrap",
-            flexGrow: 1,
-            gap: 1,
-            width: "40%",
-          }}
-        >
-          
-          <MultipleSelectChip
-            title="Product IDs"
-            data={["prod1", "prod2", "prod3"]} 
-          />
-          {/* <TextField label="ProdId" name="ProdId"  data={["prod1", "prod2", "prod3"]}/> */}
-          <TextField label="FilterValues" name="FilterValues" />
-          <TextField label="Name" name="Name" />
-
-          <label htmlFor="SubProductImage">
-            <Button variant="contained" component="span">
-              Choose SubProduct
-            </Button>
-            <input
-              accept="image/*"
-              type="file"
-              id="SubProductImage"
-              name="SubProductImage"
-              placeholder="Choose SubProduct"
-              onChange={handleImageChange}
-              style={{ display: "none" }}
-            />
-          </label>
-          {imagePreview && (
-            <img
-              src={imagePreview}
-              alt="SubProduct Preview"
-              style={{
-                width: "100px",
-                height: "100px",
-                borderRadius: "10%",
-              }}
-            />
-          )}
-          <FormControlLabel
-            control={<Checkbox name="Active" color="primary" />}
-            label="Active"
-          />
-          <TextField label="FilterList" name="FilterList" />
-          <Button type="submit" variant="contained" color="primary">
-            Create
-          </Button>
-        </FormControl>
+        <Grid container spacing={2}>
+          <Grid item xs={6}>
+            <FormControl fullWidth>
+              <InputLabel id="category_Dropdown">Choose Category</InputLabel>
+              <Select
+                labelId="category_Dropdown"
+                id="select_category_Dropdown"
+                value={selectedCategory}
+                label="Choose Category"
+                fullWidth
+                onChange={(event) => setSelectedCategory(event.target.value)}
+              >
+                {categories?.map((category) => (
+                  <MenuItem
+                    key={category.catID}
+                    value={category.catID.toString()}
+                  >
+                    {category.category_name}
+                  </MenuItem>
+                ))}
+              </Select>
+              <Grid item marginTop={2}>
+                <TextField label="Subproduct Name" name="Name" fullWidth />
+              </Grid>
+            </FormControl>
+          </Grid>
+          <Grid item xs={6}>
+            <FormControl fullWidth>
+              <InputLabel id="product_Dropdown">Choose Product</InputLabel>
+              <Select
+                labelId="product_Dropdown"
+                id="select_product_Dropdown"
+                multiple // Enable multiple selection
+                value={selectedProduct}
+                label="Choose Product"
+                fullWidth
+                onChange={handleProductChange}
+                disabled={!selectedCategory}
+                renderValue={(selected) => (
+                  <div>
+                    {selected.map((value) => (
+                      <Chip key={value} label={getProductNameById(value)} />
+                    ))}
+                  </div>
+                )}
+              >
+                {productsData.map((product) => (
+                  <MenuItem key={product.prodID} value={product.prodID}>
+                    {product.prod_name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+        </Grid>
+        <Grid container spacing={2} marginTop={2} alignItems="center">
+          <Grid item xs={12}>
+            <label htmlFor="SubProductImage">
+              <Button variant="contained" component="span">
+                Choose Image
+              </Button>
+              <input
+                accept="image/*"
+                type="file"
+                id="SubProductImage"
+                name="SubProductImage"
+                placeholder="Choose Images"
+                onChange={handleImageChange}
+                style={{ display: "none" }}
+                multiple
+              />
+            </label>
+          </Grid>
+          {imagePreviews.map((previewUrl, index) => (
+            <Grid item key={index}>
+              <div style={{ marginTop: 16 }}>
+                <Card>
+                  <CardMedia
+                    component="img"
+                    src={previewUrl}
+                    alt={`SubProduct Preview ${index + 1}`}
+                    style={{
+                      width: 100,
+                      height: 100,
+                      borderRadius: "10%",
+                    }}
+                  />
+                </Card>
+                <Typography variant="body1">{`Preview ${
+                  index + 1
+                }`}</Typography>
+              </div>
+            </Grid>
+          ))}
+        </Grid>
+        <Grid item xs={12} sm={6} marginY={2}>
+          <FormControl fullWidth>
+            <InputLabel id="item-status-label">Item Status</InputLabel>
+            <Select
+              labelId="item-status-label"
+              id="item-status-select"
+              value={itemStatus}
+              label="Item Status"
+              onChange={(event) => setItemStatus(event.target.value)}
+            >
+              <MenuItem value="A">Active</MenuItem>
+              <MenuItem value="I">Inactive</MenuItem>
+              <MenuItem value="S">Store</MenuItem>
+            </Select>
+          </FormControl>
+        </Grid>
+        <TextField label="FilterList" name="FilterList" />
+        <Button type="submit" variant="contained" color="primary">
+          Create
+        </Button>
       </form>
     </div>
   );
 };
 
 export default CreateSubProduct;
-
-// import React, { useState } from "react";
-// import {
-//   Button,
-//   Checkbox,
-//   FormControlLabel,
-//   FormControl,
-//   TextField,
-// } from "@mui/material";
-// import useCreateSubProduct from "../../hooks/Product/useCreateSubProduct";
-
-// const CreateSubProduct: React.FC = () => {
-//   const createSubProductMutation = useCreateSubProduct();
-//   // const [imagePreviews, setImagePreviews] = useState<File[]>([]);
-//   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
-//   // const [imageFiles, setImageFiles] = useState<File[]>([]);
-
-//   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-//     e.preventDefault();
-
-//     const formData = new FormData(e.currentTarget);
-//     const SubProductData = {
-//       ProdId: (formData.get("ProdId") as string).split(","),
-//       FilterValues: (formData.get("FilterValues") as string).split(","),
-//       Name: formData.get("Name") as string,
-//       Active: Boolean(formData.get("Active")),
-//       // SubProductImage: formData.get("SubProductImage") as unknown as FileList,
-//       SubProductImage: formData.get("Image") as File,
-
-//       SubProductFilterValues: (formData.get("FilterValues") as string).split(
-//         ","
-//       ),
-//     };
-//     console.log("data :", SubProductData);
-//     createSubProductMutation.mutate(SubProductData);
-//   };
-
-//   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-//     const files = event.currentTarget.files;
-
-//     if (files && files.length > 0) {
-//       const selectedFiles: File[] = Array.from(files);
-//       console.log("selectedFiles:", selectedFiles);
-//       setImageFiles(selectedFiles);
-//       setImagePreviews(selectedFiles);
-//     } else {
-//       setImagePreviews([]);
-//     }
-//     /* if (files && files.length > 0) {
-//       const previewURLs: string[] = [];
-//       Array.from(files).forEach((file) => {
-//         const reader = new FileReader();
-//         reader.onloadend = () => {
-//           previewURLs.push(reader.result as string);
-//           if (previewURLs.length === files.length) {
-//             setImagePreviews(previewURLs);
-//           }
-//         };
-//         reader.readAsDataURL(file);
-//       });
-//     } else {
-//       setImagePreviews([]);
-//     }*/
-//   };
-
-//   return (
-//     <div>
-//       <h3>Create SubProduct</h3>
-//       <form onSubmit={handleSubmit}>
-//         <FormControl>
-//           <TextField label="ProdId" name="ProdId"  />
-//           <TextField label="FilterValues" name="FilterValues"  />
-//           <TextField label="Name" name="Name"  type="number" />
-//           <TextField label=" Detail" name="Detail" multiline  />
-//           {/* ---------------------------------- image
-//           --------------------------------- */}
-//           <label htmlFor="SubProductImage">
-//             <Button variant="contained" component="span">
-//               Choose SubProduct
-//             </Button>
-//             <input
-//               accept="image/*"
-//               type="file"
-//               id="SubProductImage"
-//               name="SubProductImage"
-//               placeholder="choose SubProduct"
-//               onChange={(event) => {
-//                 const file =
-//                   event.currentTarget.files && event.currentTarget.files[0];
-//                 console.log("file:", file);
-//                 if (file) {
-//                   const reader = new FileReader();
-//                   reader.onloadend = () => {
-//                     setImagePreviews(reader.result as string);
-//                   };
-//                   reader.readAsDataURL(file);
-//                 } else {
-//                   setImagePreviews(null);
-//                 }
-//               }}
-//               style={{ display: "none" }}
-//             />
-//           </label>
-//           {imagePreviews && (
-//             <img
-//               src={imagePreviews}
-//               alt="SubProduct Preview"
-//               style={{
-//                 width: "100px",
-//                 height: "100px",
-//                 borderRadius: "10%",
-//               }}
-//             />
-//           )}
-
-//           {/* ---------------------------------- end ---------------------------------
-//           <label htmlFor="Image">
-//             <Button variant="contained" component="span">
-//               Choose Image
-//             </Button>
-//             <input
-//               accept="image/*"
-//               type="file"
-//               id="Image"
-//               name="Image"
-//               placeholder="choose "
-//               multiple
-//               onChange={handleImageChange}
-//               style={{ display: "none" }}
-//             />
-//           </label>{" "}
-//           <div style={{ display: "flex", flexWrap: "wrap" }}>
-//             {imagePreviews.map((file, index) => (
-//               <img
-//                 key={index}
-//                 src={URL.createObjectURL(file)}
-//                 alt={` Preview ${index + 1}`}
-//                 style={{
-//                   width: "100px",
-//                   height: "100px",
-//                   borderRadius: "10%",
-//                   margin: "5px",
-//                 }}
-//               />
-//             ))}
-//           </div>
-//               */}
-//           <FormControlLabel
-//             control={<Checkbox name="Active" color="primary" />}
-//             label=" Active"
-//           />
-//           <TextField label="FilterValues" name="FilterValues"  />
-//           <Button type="submit" variant="contained" color="primary">
-//             Create
-//           </Button>
-//         </FormControl>
-//       </form>
-//     </div>
-//   );
-// };
-
-// export default CreateSubProduct;
-
-/* ------------------------------- LAter check ------------------------------ */
-
-// import React from "react";
-// import { useState } from "react";
-// import { Formik, Field, Form, ErrorMessage } from "formik";
-// import * as Yup from "yup";
-// import {
-//   TextField,
-//   Checkbox,
-//   FormControlLabel,
-//   Button,
-//   Grid,
-// } from "@material-ui/core";
-// import useCreateSubProduct from "../../hooks/SubProduct/useCreateSubProduct";
-
-// const validationSchema = Yup.object().shape({
-//  ProdId: Yup.number().("Category is "),
-//   FilterValues: Yup.string().("SubProduct name is "),
-//   SubProductDetail: Yup.string().("SubProduct Detail is "),
-//   SubProductImage: Yup.mixed().("SubProduct image is "), //check
-//   Active: Yup.boolean().("SubProduct active status is "),
-//   SubProductPrice: Yup.number().("SubProduct Price is "),
-//   SubProductFilterValues: Yup.string().("SubProduct filter list is "), //check
-// });
-
-// const CreateSubProduct: React.FC = () => {
-// const createSubProductMutation = useCreateSubProduct();
-// const [imagePreview, setImagePreview] = useState<string | null>(null);
-// const handleSubmit = (values: any) => {
-//   console.log(values);
-//   createSubProductMutation.mutate(values);
-// };
-
-//   return (
-//     <div>
-//       <h3>Create SubProduct</h3>
-//       <Formik
-//         initialValues={{
-//           ProdId: "",
-//           FilterValues: "",
-//           SubProductDetail: "",
-//           SubProductImage: null,
-//           Active: false,
-//           SubProductPrice: 0,
-//           SubProductFilterValues: "",
-//         }}
-//         validationSchema={validationSchema}
-//         onSubmit={handleSubmit}
-//       >
-//         {({ values, setFieldValue }) => (
-//           <Form style={{ gap: "10px" }}>
-//             <div>
-//               <Field
-//                 as={TextField}
-//                 type="text"
-//                 id="ProdId"
-//                 name="ProdId"
-//                 label="ProdId"
-//               />
-//             </div>
-
-//             <div>
-//               <Field
-//                 as={TextField}
-//                 type="text"
-//                 id="FilterValues"
-//                 name="FilterValues"
-//                 label="SubProduct Name"
-//               />
-//             </div>
-
-//             <div>
-//               <Field
-//                 as={TextField}
-//                 type="text"
-//                 id="SubProductDetail"
-//                 name="SubProductDetail"
-//                 label="SubProduct Detail"
-//               />
-//             </div>
-
-//             <div>
-//               <Grid
-//                 SubProduct
-//                 xs={12}
-//                 sm={6}
-//                 style={{ display: "flex", alignSubProducts: "center" }}
-//                 component="div"
-//               >
-// <label htmlFor="SubProductImage">
-//   <Button variant="contained" component="span">
-//     Choose SubProduct
-//   </Button>
-//   <input
-//     accept="image/*"
-//     type="file"
-//     id="SubProductImage"
-//     name="SubProductImage"
-//     placeholder="choose SubProduct"
-//     onChange={(event) => {
-//       const file =
-//         event.currentTarget.files &&
-//         event.currentTarget.files[0];
-//       setFieldValue("SubProductImage", file);
-//       console.log("file:", file);
-//       if (file) {
-//         const reader = new FileReader();
-//         reader.onloadend = () => {
-//           setImagePreview(reader.result as string);
-//         };
-//         reader.readAsDataURL(file);
-//       } else {
-//         setImagePreview(null);
-//       }
-//     }}
-//     style={{ display: "none" }}
-//   />
-// </label>
-// {imagePreview && (
-//   <img
-//     src={imagePreview}
-//     alt="SubProduct Preview"
-//     style={{
-//       width: "100px",
-//       height: "100px",
-//       borderRadius: "10%",
-//     }}
-//   />
-// )}
-// <ErrorMessage
-//   name="SubProductImage"
-//   component="div"
-//   className="error"
-// />
-//               </Grid>
-//             </div>
-
-//             <div>
-//               <FormControlLabel
-//                 control={
-//                   <Checkbox
-//                     id="SubProductActive"
-//                     name="SubProductActive"
-//                     color="primary"
-//                     checked={values.SubProductActive}
-//                     onChange={(event) => {
-//                       setFieldValue("SubProductActive", event.target.checked);
-//                     }}
-//                   />
-//                 }
-//                 label="Active"
-//               />
-//               <ErrorMessage
-//                 name="SubProductActive"
-//                 component="div"
-//                 className="error"
-//               />
-//             </div>
-
-//             <div>
-//               <Field
-//                 as={TextField}
-//                 type="number"
-//                 id="SubProductPrice"
-//                 name="SubProductPrice"
-//                 label="SubProduct Price"
-//               />
-//             </div>
-
-//             <div>
-//               <Field
-//                 as={TextField}
-//                 type="text"
-//                 id="productFilterValues"
-//                 name="productFilterValues"
-//                 label="Product Filter List"
-//               />
-//             </div>
-//             <hr style={{ border: "0px" }} />
-//             <Button type="submit" variant="contained" color="primary">
-//               Save
-//             </Button>
-//           </Form>
-//         )}
-//       </Formik>
-//     </div>
-//   );
-// };
-
-// export default CreateSubProduct;

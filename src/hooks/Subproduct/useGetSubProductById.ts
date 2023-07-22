@@ -24,15 +24,19 @@ interface ApiResponse {
   status: number;
 }
 
-const useGetSubProduct = (subProdId: number) => {
-  return useQuery<SubProductById, Error>(
+const useGetSubProductById = (subProdId: number) => {
+  const { data, isLoading, error } = useQuery<SubProductById, Error>(
     ["subProduct", subProdId],
     () =>
-      axios.post<ApiResponse>(
-        `${import.meta.env.VITE_API_BASE_URL as string}/subProduct/getSubProduct`,
-        { subProdId }
-      ).then((response) => response.data.jsonResponse),
+      axios
+        .post<ApiResponse>(
+          `${import.meta.env.VITE_API_BASE_URL as string}/subProduct/getSubProduct`,
+          { subProdId }
+        )
+        .then((response) => response.data.jsonResponse)
   );
+
+  return { data, isLoading, error };
 };
 
-export default useGetSubProduct;
+export default useGetSubProductById;

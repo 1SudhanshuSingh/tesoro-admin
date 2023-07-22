@@ -2,40 +2,48 @@ import { useQuery } from "react-query";
 import axios from "axios";
 
 interface AllSubProduct {
-    subprodID: number;
-    subprod_Name: string;
-    subprod_image: string;
-    subprod_active: string;
-    subprod_prodID: number[];
-    subprod_filterList: number[];
-    subprod_filterValues: number[];
-  }
-  
-  interface ApiResponse {
-    output: number;
-    message: string;
-    jsonResponse: AllSubProduct[];
-    status: number;
-  }
-  
+  subprodID: number;
+  subprod_Name: string;
+  subprod_image: string;
+  subprod_active: string;
+  subprod_prodID: number[];
+  subprod_filterList: number[];
+  subprod_filterValues: number[];
+}
+
+interface ApiResponse {
+  output: number;
+  message: string;
+  jsonResponse: AllSubProduct[];
+  status: number;
+}
+
 interface FetchSubAllProductsOptions {
-    subProdId?: number;
+  prodId?: number;
+  maxSubprodId?: number;
+  limit?: number;
 }
 
 async function fetchAllSubProducts(
   options: FetchSubAllProductsOptions
-): Promise<AllSubProduct[]> {
-  const { subProdId } = options;
+): Promise<ApiResponse> {
+  const { prodId, maxSubprodId, limit } = options;
   const queryParams = new URLSearchParams();
 
-  if (subProdId === 0) {
-    queryParams.append("subProdId", subProdId.toString());
+  if (prodId) {
+    queryParams.append("prodId", prodId.toString());
+  }
+  if (maxSubprodId === 0) {
+    queryParams.append("maxSubprodId", maxSubprodId.toString());
+  }
+  if (limit) {
+    queryParams.append("limit", limit.toString());
   }
 
   const response = await axios.post<ApiResponse>(
     `${
       import.meta.env.VITE_API_BASE_URL as string
-    }/subProduct/getAllSubProduct`,
+    }/subProduct/getAllSubProdThruProdId`,
     queryParams
   );
 
@@ -43,17 +51,19 @@ async function fetchAllSubProducts(
     throw new Error("Failed to fetch subproducts");
   }
 
-  return response.data.jsonResponse;
+  return response.data;
 }
 
 export const useGetAllSubproduct = (
-    subProdId?: number,
+  prodId?: number,
+  maxSubprodId?: number,
+  limit?: number
 ) => {
-  const { data, isLoading, error } = useQuery<AllSubProduct[], Error>(
-    ["allSubProducts", subProdId],
-    () => fetchAllSubProducts({ subProdId })
+  const { data, isLoading, error } = useQuery<ApiResponse, Error>(
+    ["allSubProducts", prodId, maxSubprodId, limit],
+    () => fetchAllSubProducts({ prodId, maxSubprodId, limit })
   );
-  const allSubProductsData = data?.map((subProd) => ({
+  const allSubProductsData = data?.jsonResponse?.map((subProd) => ({
     ...subProd,
     id: subProd.subprodID,
   })) || [];

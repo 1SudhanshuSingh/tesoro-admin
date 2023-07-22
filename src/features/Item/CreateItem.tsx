@@ -12,49 +12,64 @@ import {
   Snackbar,
   Autocomplete,
   Chip,
+  MenuItem,
+  InputLabel,
+  Select,
 } from "@mui/material";
 import AddPhotoAlternateRoundedIcon from "@mui/icons-material/AddPhotoAlternateRounded";
 import CurrencyRupeeRoundedIcon from "@mui/icons-material/CurrencyRupeeRounded";
 import useCreateItem from "../../hooks/Product/useCreateItem";
 import { useGetAllSubproduct } from "../../hooks/Subproduct/useGetAllSubProduct";
-import { MenuItem } from "@material-ui/core";
-import { uuid } from "short-uuid";
 import { useNavigate } from "react-router-dom";
+import { useCategories } from "../../hooks/Category/useGetAllCategory";
+import { useProducts } from "../../hooks/Product/useGetAllProdThruCatId";
 import useGetSubProductById from "../../hooks/Subproduct/useGetSubProductById";
 
 const CreateItem: React.FC = () => {
   const createItemMutation = useCreateItem();
   const navigate = useNavigate();
+
   const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
   const [imagePreviews, setImagePreviews] = useState<File[]>([]);
-  const [isItemActive, setIsItemActive] = useState<boolean>(true);
-  const [subProdFilterValues, setSubProdFilterValues] = useState<any>([]);
+  const [itemStatus, setItemStatus] = useState<string>("");
+  const [subProdFilterValues, setSubProdFilterValues] = useState([]);
   const [subProdFilterList, setSubProdFilterList] = useState([]);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [selectedSubProduct, setSelectedSubProduct] = useState<string>("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedProduct, setSelectedProduct] = useState("");
+
+  const { data: response } = useCategories();
+  const categories = response?.jsonResponse;
+
+  const { data: prodData } = useProducts(
+    selectedCategory ? parseInt(selectedCategory) : undefined,
+    0,
+    1000
+  );
+  const productsData = prodData?.jsonResponse || [];
+
   const { allSubProductsData, isLoading: subproductLoading } =
-    useGetAllSubproduct(0);
+    useGetAllSubproduct(Number(selectedProduct), 0, 1000);
+
   const { data: subProdDataById } = useGetSubProductById(
     Number(selectedSubProduct)
   );
-  const generateItemSku = (): string => {
-    const encodedUUID = uuid();
-    return `TS${encodedUUID}`;
-  };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const ItemData = {
-      subProdId: Number(formData.get("subProdId")),
-      ItemSku: generateItemSku(),
+      subProdId: selectedSubProduct,
+      ItemSku: selectedSubProduct,
       ItemQty: Number(formData.get("ItemQty")),
-      ItemActive: isItemActive ? "A" : "F",
+      ItemActive: itemStatus,
       ItemDetail: formData.get("ItemDetail") as string,
       ItemImage: imageFiles,
       ItemPrice: Number(formData.get("ItemPrice")),
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      ItemFilterValues: subProdFilterList.map(item => Number(item?.filter_id)),
+      ItemFilterValues: subProdFilterList.map((item) =>
+        Number(item?.filter_id)
+      ),
     };
     createItemMutation.mutate(ItemData);
   };
@@ -70,6 +85,7 @@ const CreateItem: React.FC = () => {
       setImagePreviews([]);
     }
   };
+
   useEffect(() => {
     if (createItemMutation.isSuccess) {
       setOpenSnackbar(true);
@@ -92,43 +108,86 @@ const CreateItem: React.FC = () => {
     updatedFilterValues.splice(index, 1);
     setSubProdFilterValues(updatedFilterValues);
   };
-  console.log(subProdFilterList);
-  
   return (
     <div>
       <h3>Create Item</h3>
       <form onSubmit={handleSubmit}>
         <FormControl style={{ margin: "20px" }} focused>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={4}>
-              <TextField
-                label="Choose Subproduct"
-                name="subProdId"
-                type="number"
-                fullWidth
-                select
-                value={selectedSubProduct}
-                onChange={(event) => setSelectedSubProduct(event.target.value)}
-              >
-                {subproductLoading ? (
-                  <MenuItem value="">Loading...</MenuItem>
-                ) : (
-                  allSubProductsData?.map((subprod) => (
-                    <MenuItem key={subprod.subprodID} value={subprod.subprodID}>
-                      {subprod.subprod_Name}
+            <Grid item xs={3}>
+              <FormControl fullWidth>
+                <InputLabel id="category_Dropdown">Choose Category</InputLabel>
+                <Select
+                  labelId="category_Dropdown"
+                  id="select_category_Dropdown"
+                  value={selectedCategory}
+                  label="Choose Category"
+                  fullWidth
+                  onChange={(event) => setSelectedCategory(event.target.value)}
+                >
+                  {categories?.map((category) => (
+                    <MenuItem
+                      key={category.catID}
+                      value={category.catID.toString()}
+                    >
+                      {category.category_name}
                     </MenuItem>
-                  ))
-                )}
-              </TextField>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={3}>
+              <FormControl fullWidth>
+                <InputLabel id="product_Dropdown">Choose Product</InputLabel>
+                <Select
+                  labelId="product_Dropdown"
+                  id="select_product_Dropdown"
+                  value={selectedProduct}
+                  label="Choose Product"
+                  fullWidth
+                  onChange={(event) => setSelectedProduct(event.target.value)}
+                  disabled={!selectedCategory}
+                >
+                  {productsData.map((product) => (
+                    <MenuItem
+                      key={product.prodID}
+                      value={product.prodID.toString()}
+                    >
+                      {product.prod_name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={6}>
+              <FormControl fullWidth>
+                <InputLabel id="SubProduct_Dropdown">
+                  Choose SubProduct
+                </InputLabel>
+                <Select
+                  labelId="SubProduct_Dropdown"
+                  id="select_SubProduct_Dropdown"
+                  value={selectedSubProduct}
+                  label="Choose SubProduct"
+                  fullWidth
+                  onChange={(event) =>
+                    setSelectedSubProduct(event.target.value)
+                  }
+                >
+                  {subproductLoading ? (
+                    <MenuItem value="">Loading...</MenuItem>
+                  ) : (
+                    allSubProductsData.map((subprod) => (
+                      <MenuItem key={subprod.subprodID} value={subprod.subprodID}>
+                        {subprod.subprod_Name}
+                      </MenuItem>
+                    ))
+                  )}
+                </Select>
+              </FormControl>
             </Grid>
             <Grid item xs={12} sm={4}>
-              <TextField
-                label="ItemSku"
-                name="ItemSku"
-                disabled
-                value={generateItemSku()}
-                fullWidth
-              />
+              <TextField label="ItemSku" name="ItemSku" fullWidth />
             </Grid>
             <Grid item xs={12} sm={4}>
               <TextField
@@ -193,17 +252,20 @@ const CreateItem: React.FC = () => {
               </Box>
             </Grid>
             <Grid item xs={12} sm={6}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    name="ItemActive"
-                    color="primary"
-                    checked={isItemActive}
-                    onChange={(e) => setIsItemActive(e.target.checked)}
-                  />
-                }
-                label={isItemActive ? "Active" : "Inactive"}
-              />
+              <FormControl fullWidth>
+                <InputLabel id="item-status-label">Item Status</InputLabel>
+                <Select
+                  labelId="item-status-label"
+                  id="item-status-select"
+                  value={itemStatus}
+                  label="Item Status"
+                  onChange={(event) => setItemStatus(event.target.value)}
+                >
+                  <MenuItem value="A">Active</MenuItem>
+                  <MenuItem value="I">Inactive</MenuItem>
+                  <MenuItem value="S">Store</MenuItem>
+                </Select>
+              </FormControl>
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
@@ -221,11 +283,11 @@ const CreateItem: React.FC = () => {
               />
             </Grid>
             <Grid item xs={6}>
-              {subProdDataById && (
+              {subProdDataById && subProdDataById.subprod_filterList && (
                 <Autocomplete
                   multiple
                   options={subProdDataById.subprod_filterList}
-                  getOptionLabel={(option) => option.filter_name}
+                  getOptionLabel={(option: any) => option?.filter_name}
                   value={subProdFilterList}
                   onChange={(event, newValue) => setSubProdFilterList(newValue)}
                   renderTags={(value, getTagProps) =>
@@ -245,7 +307,7 @@ const CreateItem: React.FC = () => {
               )}
             </Grid>
             <Grid item xs={6}>
-              {subProdDataById && (
+              {subProdDataById && subProdDataById.subprod_filterValues && (
                 <Autocomplete
                   multiple
                   options={subProdDataById.subprod_filterValues}

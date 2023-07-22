@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import { Button, Modal, Box, IconButton } from "@mui/material";
+import { Modal, Box, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
 interface LargeModalProps {

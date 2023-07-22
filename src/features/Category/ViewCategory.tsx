@@ -7,15 +7,15 @@ import { useNavigate } from "react-router";
 
 const columns: GridColDef[] = [
   {
-    field: "row",
-    headerName: "Row",
+    field: "catID",
+    headerName: "ID",
     flex: 1,
     headerAlign: "center",
     align: "center",
     width: 100,
   },
   {
-    field: "cat_name",
+    field: "category_name",
     headerName: "Category Name",
     flex: 1,
     headerAlign: "center",
@@ -23,8 +23,8 @@ const columns: GridColDef[] = [
     width: 200,
   },
   {
-    field: "parent_categoryID",
-    headerName: "Parent Category",
+    field: "category_active",
+    headerName: "status",
     flex: 1,
     headerAlign: "center",
     align: "center",
@@ -35,7 +35,7 @@ const columns: GridColDef[] = [
 const Viewcategory: React.FC = () => {
   const navigate = useNavigate();
   const { data: response, isLoading, error } = useCategories();
-  const rows = response?.jsonResponse || [];
+  const rows = response && response?.jsonResponse || [];
   const rowsWithId = rows.map((row) => ({
     ...row,
     id: row.row.toString(),

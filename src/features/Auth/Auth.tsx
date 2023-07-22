@@ -34,9 +34,8 @@ const AuthPage: React.FC = () => {
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
-    const isAuthenticated = login(username, password);
-
-    if (!isAuthenticated) {
+    login(username, password);
+    if (isAuthenticated) {
       setLoginError("Invalid username or password");
     }
   };

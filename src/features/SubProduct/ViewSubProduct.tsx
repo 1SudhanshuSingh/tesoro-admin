@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Chip,
@@ -12,19 +10,9 @@ import {
 } from "@mui/material";
 import { DataGrid, GridAddIcon, GridColDef } from "@mui/x-data-grid";
 import { useProducts } from "../../hooks/Product/useGetAllProdThruCatId";
-import { useGetSubproduct } from "../../hooks/Subproduct/useGetSubproduct";
 import { useNavigate } from "react-router";
 import { useCategories } from "../../hooks/Category/useGetAllCategory";
-
-interface RowData {
-  id: string;
-  prod_catID: number;
-  prod_active: string;
-  prod_name: string;
-  prod_type: { id: number; value: string }[];
-  prod_sequence: number;
-  prod_filterList: { id: number; value: string }[];
-}
+import { useGetAllSubproduct } from "../../hooks/Subproduct/useGetAllSubProduct";
 
 const columns: GridColDef[] = [
   { field: "row", headerName: "Subprod ID" },
@@ -73,24 +61,31 @@ const columns: GridColDef[] = [
 
 const ViewProduct: React.FC = () => {
   const navigate = useNavigate();
-  const { data: response, isLoading, error } = useCategories();
+  const { data: response, isLoading } = useCategories();
   const categories = response?.jsonResponse || [];
 
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedProduct, setSelectedProduct] = useState("");
   const { data: prodData, isLoading: productsLoading } = useProducts(
-    selectedCategory ? parseInt(selectedCategory) : undefined,
+    selectedCategory ? Number(selectedCategory) : undefined,
     0,
     1000
   );
-  const productsData = prodData?.jsonResponse || [];
+  const productsData = prodData?.jsonResponse;
 
-  const { subProductsData, isLoading: subProductsLoading } = useGetSubproduct(
-    selectedProduct ? parseInt(selectedProduct) : 0,
+  const { allSubProductsData, isLoading: subProductsLoading } = useGetAllSubproduct(
+    selectedProduct ? Number(selectedProduct) : 0,
     0,
     1000
   );
-  
+
+  useEffect(() => {
+    if (selectedCategory === "" || !productsData) {
+      return;
+    }
+
+    setSelectedProduct("");
+  }, [selectedCategory, productsData]);
   return (
     <div>
       <Box
@@ -104,7 +99,7 @@ const ViewProduct: React.FC = () => {
         <Fab
           color="primary"
           aria-label="add"
-          onClick={() => navigate("./createProduct")}
+          onClick={() => navigate("./createSubproduct")}
         >
           <GridAddIcon />
         </Fab>
@@ -132,8 +127,8 @@ const ViewProduct: React.FC = () => {
               onChange={(event) => setSelectedCategory(event.target.value)}
             >
               {categories.map((category) => (
-                <MenuItem key={category.row} value={category.row.toString()}>
-                  {category.cat_name}
+                <MenuItem key={category.catID} value={category.catID.toString()}>
+                  {category.category_name}
                 </MenuItem>
               ))}
             </Select>
@@ -146,11 +141,11 @@ const ViewProduct: React.FC = () => {
               value={selectedProduct}
               label="Choose Product"
               fullWidth
-              onChange={(event) => setSelectedProduct(event.target.value as string)}
+              onChange={(event) => setSelectedProduct(event.target.value)}
               disabled={!selectedCategory}
             >
-              {productsData.map((product) => (
-                <MenuItem key={product.row} value={product.row.toString()}>
+              {productsData?.map((product) => (
+                <MenuItem key={product.prodID} value={product.prodID.toString()}>
                   {product.prod_name}
                 </MenuItem>
               ))}
@@ -158,7 +153,7 @@ const ViewProduct: React.FC = () => {
           </FormControl>
         </Box>
         <DataGrid
-          rows={subProductsData}
+          rows={allSubProductsData}
           columns={columns.map((column) => ({
             ...column,
             flex: 1,
@@ -168,7 +163,6 @@ const ViewProduct: React.FC = () => {
           }))}
           loading={isLoading || productsLoading || subProductsLoading}
           autoHeight
-          pageSize={10}
         />
       </Box>
     </div>

@@ -23,6 +23,7 @@ const RouterConfig: React.FC = () => {
       <Route path="/product" element={<ViewProduct />} />
       <Route path="/product/createProduct" element={<CreateProduct />} />
       <Route path="/subproduct" element={<ViewSubProduct />} />
+      <Route path="/subproduct/createSubproduct" element={<CreateSubProduct />} />
       <Route
         path="/subproduct/createSubProduct"
         element={<CreateSubProduct />}

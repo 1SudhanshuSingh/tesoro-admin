@@ -5,7 +5,7 @@ const expectedPassword = import.meta.env.VITE_ADMIN_PASSWORD as string;
 
 export function useAuth() {
   const initialAuthState = localStorage.getItem("isAuthenticated") === "true";
-  const [isAuthenticated, setIsAuthenticated] = useState(initialAuthState);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(initialAuthState);
 
   const login = (username: string, password: string) => {
     console.log(username, password, expectedUsername, expectedPassword);
