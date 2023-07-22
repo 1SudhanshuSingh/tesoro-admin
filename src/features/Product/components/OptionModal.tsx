@@ -4,17 +4,15 @@ import AssociatedOptions from "../../components/AssociateOptions";
 import GloballyAvailableOptions from "../../components/GlobalOptions";
 import CreateNewOptions from "../../components/CreateNewOption";
 import React, { useState, useEffect } from "react";
-import useCreateMasterOption from "../../../hooks/Filter/useCreateMasterOption";
+
+import { Option } from "../../../hooks/Filter/useallFilterOptionsAvailableForFilterID";
 interface OptionalModalProps {
   show: boolean;
-  data: Array<{
-    id: number;
-    label: string;
-  }>;
+  data: Option[] | null;
   handleShow: (show: boolean) => void;
   handleBackToFilter: (show: boolean) => void;
   handleCreateOption: (OptionName: string) => void;
-  setAssociatedFiltrOption: (id: number) => void;
+  setAssociatedFiltrOption?: (ids: number[]) => void;
 }
 
 const OptionModal: React.FC<OptionalModalProps> = ({
@@ -25,30 +23,36 @@ const OptionModal: React.FC<OptionalModalProps> = ({
   handleCreateOption,
   setAssociatedFiltrOption,
 }) => {
-  const [showGlobalOption, setShowGlobalOption] = useState<boolean>(false);
-  const [openCreateNew, setOpenCreateNew] = useState<boolean>(false);
   const [newOptionName, setNewOptionName] = useState("");
-  const newOptionHandler = () => {
-    setShowGlobalOption(true);
-  };
-
   //filter associtaed options
   const [globalOption, setGlobalOption] = useState<number[]>([]);
-  // setNumbers((prevNumbers) => [...prevNumbers, value]);
-  const setGlobalOptin = (id: number) => {
-    setGlobalOption((prevNumbers) => [...prevNumbers, id]);
-    console.log("fg", globalOption);
+  const setGlobalOptin = (ids: number[]) => {
+    setGlobalOption((prevNumbers) => {
+      const uniqueIds = new Set([...prevNumbers, ...ids]);
+      return Array.from(uniqueIds);
+    });
+    console.log("insicefunc", globalOption);
+    console.log("ids", ids);
   };
   useEffect(() => {
-    console.log("globalOption", globalOption);
+    // console.log("globalOption", globalOption);
   }, [globalOption]);
 
-  const { isLoading } = useCreateMasterOption(); //change use here
+  // const { isLoading } = useCreateMasterOption(); //change use here
+  const isLoading = false;
+
+  const [showGlobalOption, setShowGlobalOption] = useState<boolean>(false);
+  const [openCreateNew, setOpenCreateNew] = useState<boolean>(false);
+
   const handleCreateButtonClick = () => {
     handleCreateOption(newOptionName);
     setNewOptionName("");
     setOpenCreateNew(false);
   };
+  const newOptionHandler = () => {
+    setShowGlobalOption(true);
+  };
+
   const closeCreateNew = () => {
     setOpenCreateNew(false);
   };
@@ -74,14 +78,14 @@ const OptionModal: React.FC<OptionalModalProps> = ({
         }}
       >
         <AssociatedOptions
-          newOptionHandler={newOptionHandler}
           // options={data}
           options={
             data?.filter((item) => {
-              return globalOption.includes(item.id);
+              return globalOption.includes(item.filter_optionID);
             }) || []
           }
           setAssociatedFiltrOption={setAssociatedFiltrOption}
+          newOptionHandler={newOptionHandler}
         />
 
         {showGlobalOption && (

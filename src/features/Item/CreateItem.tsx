@@ -18,7 +18,7 @@ import {
 } from "@mui/material";
 import AddPhotoAlternateRoundedIcon from "@mui/icons-material/AddPhotoAlternateRounded";
 import CurrencyRupeeRoundedIcon from "@mui/icons-material/CurrencyRupeeRounded";
-import useCreateItem from "../../hooks/Product/useCreateItem";
+import useCreateItem from "../../hooks/Item/useCreateItem";
 import { useGetAllSubproduct } from "../../hooks/Subproduct/useGetAllSubProduct";
 import { useNavigate } from "react-router-dom";
 import { useCategories } from "../../hooks/Category/useGetAllCategory";

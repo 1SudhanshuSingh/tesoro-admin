@@ -8,7 +8,7 @@ interface AssociatedFilterProps {
   showOption?: boolean;
   showAttachNew?: boolean;
   newFilterHandler?: () => void;
-  handleFilter: (id: number) => void;
+  handleFilter: (id: number, name: string) => void;
   setAssociatedFiltr?: (ids: number[]) => void;
 }
 const AssociatedFilter: React.FC<AssociatedFilterProps> = ({

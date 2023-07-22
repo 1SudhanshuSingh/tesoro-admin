@@ -12,7 +12,7 @@ interface FilterModalProps {
   show: boolean;
   data: Filter[] | null;
   handleShow: (show: boolean) => void;
-  getFilterId: (id: number) => void;
+  getFilterId: (id: number,name:string) => void;
   handleCreateFilter: (filterName: string) => void;
   setAssociatedFiltr?: (ids: number[]) => void;
 }
@@ -31,26 +31,14 @@ const FilterModal: React.FC<FilterModalProps> = ({
   const [globalFilter, setGlobalFilter] = useState<number[]>([]);
 
   const setGlobalFilte = (ids: number[]) => {
-    setGlobalFilter((prevNumbers) => [...prevNumbers, ...ids]);
-    console.log("fg", globalFilter); // Note that this console.log will show the previous state as state updates are asynchronous.
+    setGlobalFilter((prevNumbers) => {
+      const uniqueIds = new Set([...prevNumbers, ...ids]);
+      return Array.from(uniqueIds);
+    });
   };
 
-  useEffect(() => {
-    console.log("globalfilter", globalFilter);
-  }, [globalFilter]);
+  useEffect(() => {}, [globalFilter]);
 
-  /*
-  const [globalFilter, setGlobalFilter] = useState<number[]>([]);
-  // setNumbers((prevNumbers) => [...prevNumbers, value]);
-  const setGlobalFilte = (id: number) => {
-    setGlobalFilter((prevNumbers) => [...prevNumbers, id]);
-    console.log("fg", globalFilter);
-  };
-  useEffect(() => {
-    console.log("globalfilter", globalFilter);
-  }, [globalFilter]);
-  // console.log(globalFilter.push({ row: 5, filter_id: 1, filter_name: "Colorgsvea" }));
-  */
   const [showGlobalFilter, setShowGlobalFilter] = useState<boolean>(false);
   const [openCreateNew, setOpenCreateNew] = useState<boolean>(false);
 

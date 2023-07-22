@@ -10,9 +10,9 @@ export interface Product {
   prodID: number;
   prod_name: string;
   prod_catID: number;
-  prod_image: string | null;
-  prod_active: "A" | "I" | "S";
-  prod_sequence: number | null;
+  prod_image: string | null;  
+  prod_active: "A" | "I" | "S";// prod_active: string;
+  prod_sequence: number | null;// prod_sequence: number;
   prod_filterList: FilterListItem[];
   prod_description: string;
 }
