@@ -12,7 +12,7 @@ import {
   CardMedia,
   Typography,
 } from "@mui/material";
-import useCreateSubProduct from "../../hooks/Product/useCreateSubProduct";
+import useCreateSubProduct from "../../hooks/Subproduct/useCreateSubProduct";
 import { useCategories } from "../../hooks/Category/useGetAllCategory";
 import { useProducts } from "../../hooks/Product/useGetAllProdThruCatId";
 import useFiltersAvailableForProdId from "../../hooks/Filter/useFiltersAvailableForProdId";

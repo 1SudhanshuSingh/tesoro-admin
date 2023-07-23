@@ -25,8 +25,10 @@ const useFiltersAvailableForProdId = (
     import.meta.env.VITE_API_BASE_URL as string
   }/filter/getAllFilterAvailableForProdId`;
   const params = {
-    prodID: prodId,
-    maxFilterID: 0,
+    // prodID: prodId,changed thisD
+    prodId: prodId,
+    // maxFilterID: 0, changed this
+    maxFilterId: 0,
     limit: 100,
   };
 
@@ -37,7 +39,8 @@ const useFiltersAvailableForProdId = (
     const response = await axios.post<
       GetAllFiltersAvailableForProdIdResponse,
       AxiosResponse<GetAllFiltersAvailableForProdIdResponse, unknown>
-    >(endpoint, { ...params });
+    >(endpoint, { params });
+    // >(endpoint, { ...params }); changed this
     return response;
   };
 

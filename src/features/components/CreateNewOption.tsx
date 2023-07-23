@@ -1,6 +1,5 @@
 import React from "react";
 import { Grid, TextField, Button, Modal, Box } from "@mui/material";
-import { Filter } from "../../hooks/Filter/useFiltersAvailableForProdId";
 
 interface CreateNewOptionsProps {
   // handleBackToFilter: (show: boolean) => void;
@@ -53,19 +52,12 @@ const CreateNewOptions: React.FC<CreateNewOptionsProps> = ({
             return setNewOptionName(value);
           }}
         />
-        {/* <Grid container gap={2} marginTop={2}> */}
+
         <Grid container marginTop={2}>
           <Grid marginRight={2}>
-            {/* <Button
-              variant="outlined"
-              onClick={() => handleBackToFilter(true)}
-              disabled={isLoading}
-            >
-              Go back to filters
-            </Button> */}
             <Button
               variant="outlined"
-              onClick={() => handleCreateButtonClick}
+              onClick={handleCreateButtonClick}
               disabled={isLoading}
             >
               Submit

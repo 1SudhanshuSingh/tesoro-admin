@@ -1,6 +1,6 @@
 import React from "react";
 import { Grid, TextField, Button, Modal, Box } from "@mui/material";
-import { Filter } from "../../hooks/Filter/useFiltersAvailableForProdId";
+import useFiltersAvailableForProdId from "../../hooks/Filter/useFiltersAvailableForProdId";
 
 interface CreateNewFilterProps {
   isLoading?: boolean;

@@ -15,7 +15,7 @@ interface FilterListProps {
   showAttachNew?: boolean;
   newFilterHandler?: () => void;
   setCreateNew?: () => void;
-  handleFilter: (id: number) => void;
+  handleFilter: (id: number, name: string) => void;
   // setGlobalFilte?: (id: number) => void;
   // setAssociatedFiltr?: (id: number) => void;
   setGlobalFilte?: (ids: number[]) => void;
@@ -100,8 +100,10 @@ const FilterList: React.FC<FilterListProps> = ({
                       <Button
                         variant="text"
                         onClick={() => {
-                          console.log("handle");
-                          return handleFilter(filter.filter_id);
+                          return handleFilter(
+                            filter.filter_id,
+                            filter.filter_name
+                          );
                         }}
                       >
                         {filter.filter_name}

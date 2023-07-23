@@ -1,22 +1,18 @@
 import React from "react";
 import { Grid } from "@mui/material";
 import { OptionList } from "../../components";
-import { options } from "../Filter/Dummy";
+import { Option } from "../../hooks/Filter/useallFilterOptionsAvailableForFilterID";
 interface AssociatedOptionsProps {
-  options: Array<{
-    id: number;
-    label: string;
-  }>;
+  options: Option[];
   newOptionHandler?: () => void;
   showAttachNew?: boolean;
-  setAssociatedFiltrOption: (id: number) => void;
+  setAssociatedFiltrOption?: (ids: number[]) => void;
 }
 const AssociatedOptions: React.FC<AssociatedOptionsProps> = ({
   options,
   newOptionHandler,
   showAttachNew,
   setAssociatedFiltrOption,
-  
 }) => {
   return (
     <Grid item sm={4}>
